@@ -1,3 +1,9 @@
+const isAuth = localStorage.getItem("isAuthenticated");
+
+if (!isAuth) {
+  window.location.href = "/login.html";
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const body = document.querySelector("body"),
           sidebar = body.querySelector(".sidebar"),

@@ -13,6 +13,12 @@ if (toggle) {
     toggle.addEventListener("click", () => sidebar.classList.toggle("close"));
 }
 
+const isAuth = localStorage.getItem("isAuthenticated");
+
+if (!isAuth) {
+  window.location.href = "/login.html";
+}
+
 // 2. Image Preview Logic
 const imageInput = document.getElementById("blogImage");
 const previewContainer = document.getElementById('imagePreviewContainer');

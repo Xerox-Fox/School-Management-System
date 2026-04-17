@@ -27,6 +27,7 @@ loginForm.addEventListener('submit', async (e) => {
             localStorage.setItem('fullname', data.user.fullname);
             localStorage.setItem('display_id', data.user.display_id);
             localStorage.setItem('user_type', data.user.user_type);
+            localStorage.setItem("isAuthenticated", "true");
 
             const displayId = data.user.display_id || '';
             const userType = data.user.user_type || '';
