@@ -6,6 +6,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    flex-wrap: wrap;
+    display: flex;
 }
 
 body{
@@ -198,7 +200,7 @@ body {
     margin-bottom: 25px;
 }
 
-
+/* ----- Facebook Style News UI (sdash specific) ----- */
 .feed-container {
     display: flex;
     flex-direction: column;
@@ -281,7 +283,6 @@ body {
 
 .post-images img {
     width: 100%;
-    max-width: 250px;
     height: 500px;
     max-height: 400px;
     object-fit: cover;
@@ -318,4 +319,3 @@ body {
     margin: 0;
     padding: 0;
 }
-
