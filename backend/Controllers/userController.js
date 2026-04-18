@@ -76,8 +76,8 @@ async function register(req, res) {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: "your_email@gmail.com",
-                pass: "your_app_password"
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
             }
         });
 
@@ -86,11 +86,11 @@ async function register(req, res) {
             to: email,
             subject: "Account Created Successfully",
             html: `
-                <h2>Welcome ${name}</h2>
+                <h2>Welcome ${name} to LCCS School Management System</h2>
                 <p>Your account has been created successfully.</p>
-                <p><b>Role:</b> ${user_type}</p>
-                <p><b>Temporary Password:</b> ${generatedPassword}</p>
-                <p>Please log in and change your password immediately.</p>
+                <p><b>Your Role:</b> ${user_type}</p>
+                <p><b>Password:</b> ${generatedPassword}</p>
+                <p>Now you can log in and access the portal features.</p>
             `
         });
 
