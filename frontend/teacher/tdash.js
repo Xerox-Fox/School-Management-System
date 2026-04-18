@@ -1,7 +1,7 @@
 const isAuth = localStorage.getItem("isAuthenticated");
 
 if (!isAuth) {
-  window.location.href = "/login.html";
+  window.location.href = "../Login/login.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {

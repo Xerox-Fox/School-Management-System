@@ -6,6 +6,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 body{
@@ -312,8 +314,9 @@ body {
 }
 
 #news.active {
-    display: block !important;
+    display: flex !important;
     width: 100%;
     margin: 0;
     padding: 0;
+    flex-wrap: wrap;
 }

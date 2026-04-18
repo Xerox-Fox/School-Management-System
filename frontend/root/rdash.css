@@ -6,6 +6,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    flex-wrap: wrap;
+    display: flex;
 }
 
 body{

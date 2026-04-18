@@ -16,7 +16,7 @@ if (toggle) {
 const isAuth = localStorage.getItem("isAuthenticated");
 
 if (!isAuth) {
-  window.location.href = "/login.html";
+  window.location.href = "../Login/login.html";
 }
 
 // 2. Image Preview Logic
