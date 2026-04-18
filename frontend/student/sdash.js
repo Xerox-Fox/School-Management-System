@@ -101,7 +101,7 @@ async function renderNews() {
     if (!container) return;
 
     try {
-        const response = await fetch("http://localhost:3000/api/blog/see-posts", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/blog/see-posts", {
             method: "GET",
             headers: { 
                 "Authorization": `Bearer ${token}`, 
@@ -139,7 +139,7 @@ async function renderNews() {
                     <p>${post.content}</p>
                 </div>
                 <div class="${imageClass}">
-                    ${images.map(img => `<img src="http://localhost:3000${img}">`).join('')}
+                    ${images.map(img => `<img src="https://lms-backend-zghq.onrender.com${img}">`).join('')}
                 </div>
             `;
             container.appendChild(card);
@@ -156,7 +156,7 @@ async function fetchMyGrades() {
     if (!tableBody) return;
 
     try {
-        const response = await fetch("http://localhost:3000/api/results/my-grades", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/results/my-grades", {
             headers: { "Authorization": `Bearer ${token}` }
         });
         const grades = await response.json();

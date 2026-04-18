@@ -69,7 +69,7 @@ let chartInstances = { dash: null, anal: null };
 async function refreshAllCharts() {
     const token = localStorage.getItem("token");
     try {
-        const response = await fetch("http://localhost:3000/api/users/all", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/users/all", {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -145,7 +145,7 @@ if (blogForm) {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/blog/post", {
+            const response = await fetch("https://lms-backend-zghq.onrender.com/api/blog/post", {
                 method: "POST",
                 headers: { 
                     "Authorization": `Bearer ${token}` 
@@ -203,7 +203,7 @@ if (userForm) {
         };
 
         try {
-            const response = await fetch("http://localhost:3000/api/users/register", {
+            const response = await fetch("https://lms-backend-zghq.onrender.com/api/users/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                 body: JSON.stringify(userData)

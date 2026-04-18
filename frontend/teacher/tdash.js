@@ -105,7 +105,7 @@ async function renderNews() {
     if (!container) return;
 
     try {
-        const response = await fetch("http://localhost:3000/api/blog/see-posts", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/blog/see-posts", {
             method: "GET",
             headers: { 
                 "Authorization": `Bearer ${token}`, 
@@ -142,7 +142,7 @@ async function renderNews() {
                     <p>${post.content}</p>
                 </div>
                 <div class="post-images ${images.length > 1 ? 'grid-2' : ''}">
-                    ${images.map(img => `<img src="http://localhost:3000${img}">`).join('')}
+                    ${images.map(img => `<img src="https://lms-backend-zghq.onrender.com${img}">`).join('')}
                 </div>`;
             container.appendChild(card);
         });
@@ -155,7 +155,7 @@ async function renderNews() {
 async function loadDropdowns() {
     const token = localStorage.getItem("token");
     try {
-        const response = await fetch("http://localhost:3000/api/users/all", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/users/all", {
             headers: { "Authorization": `Bearer ${token}` }
         });
         const users = await response.json();
@@ -213,7 +213,7 @@ if (gradeForm) {
         };
 
         try {
-            const response = await fetch("http://localhost:3000/api/results/addgrade", {
+            const response = await fetch("https://lms-backend-zghq.onrender.com/api/results/addgrade", {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json", 

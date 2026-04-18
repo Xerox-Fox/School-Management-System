@@ -96,7 +96,7 @@ async function renderNews() {
     if (!container) return;
 
     try {
-        const response = await fetch("http://localhost:3000/api/blog/see-posts", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/blog/see-posts", {
             method: "GET",
             headers: { 
                 "Authorization": `Bearer ${token}`, 
@@ -160,7 +160,7 @@ async function fetchMyGrades() {
     if (!tableBody) return;
 
     try {
-        const response = await fetch("http://localhost:3000/api/results/child-grades", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/results/child-grades", {
             headers: { "Authorization": `Bearer ${token}` }
         });
 
@@ -213,7 +213,7 @@ async function checkNotifications() {
     if (!notifWindow) return;
 
     try {
-        const response = await fetch("http://localhost:3000/api/report-st/my-reports", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/report-st/my-reports", {
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) return;

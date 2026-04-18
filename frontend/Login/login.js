@@ -11,7 +11,7 @@ loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('pass').value;
 
     try {
-        const response = await fetch('http://localhost:3000/api/users/login', { // Adjust URL to your route
+        const response = await fetch('https://lms-backend-zghq.onrender.com/api/users/login', { // Adjust URL to your route
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
