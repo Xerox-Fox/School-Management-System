@@ -27,3 +27,8 @@ app.use('/api/results', gradeRoute);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ msg: "Server error", error: err.message });
+});
