@@ -3,7 +3,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 
 
-const db = path.join(__dirname, "database.db");
+const db = new Database(path.join(__dirname, 'database.db'));
 
 // const db = new Database(path.join(__dirname, 'database.db'));
 
