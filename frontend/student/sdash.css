@@ -8,6 +8,11 @@
     font-family: 'Inter', sans-serif;
 }
 
+body{
+    margin: 0;
+    display: flex;
+}
+
 :root {
     --body-color: #E4E9F7;
     --sidebar-color: #FFF;

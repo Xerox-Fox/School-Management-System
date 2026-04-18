@@ -1,4 +1,8 @@
-/* Full Window Container */
+body{
+    margin: 0;
+    display: flex;
+}
+
 .welcome-screen {
     position: relative;
     height: 100vh;
