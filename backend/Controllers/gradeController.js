@@ -20,27 +20,18 @@ async function insertGrade(req, res) {
     const total_mark = parseFloat(assessment_mark) + parseFloat(exam_mark);
 
     try {
-        const connection = await db;
         
         // Check if a result already exists for this student/subject/semester to update or insert
-        const existingRecord = await connection.get(
-            `SELECT result_id FROM results WHERE student_id = ? AND subject_id = ? AND semester = ?`,
-            [student_id, subject_id, semester]
-        );
+        const existingRecord = await db.prepare("SELECT result_id FROM results WHERE student_id = ? AND subject_id = ? AND semester = ?").get(student_id, subject_id, semester);
 
         if (existingRecord) {
             // Update existing record
-            await connection.run(
-                `UPDATE results SET assessment_mark = ?, exam_mark = ?, total_mark = ? WHERE result_id = ?`,
-                [assessment_mark, exam_mark, total_mark, existingRecord.result_id]
-            );
+            await db.prepare(
+                "UPDATE results SET assessment_mark = ?, exam_mark = ?, total_mark = ? WHERE result_id = ?").run(assessment_mark, exam_mark, total_mark, existingRecord.result_id);
             return res.status(StatusCodes.OK).json({ msg: "Grade updated successfully" });
         } else {
             // Insert new record
-            await connection.run(
-                `INSERT INTO results (student_id, subject_id, semester, assessment_mark, exam_mark, total_mark) VALUES (?,?,?,?,?,?)`,
-                [student_id, subject_id, semester, assessment_mark, exam_mark, total_mark]
-            );
+            await db.run("INSERT INTO results (student_id, subject_id, semester, assessment_mark, exam_mark, total_mark) VALUES (?,?,?,?,?,?)").run(student_id, subject_id, semester, assessment_mark, exam_mark, total_mark);
             return res.status(StatusCodes.CREATED).json({ msg: "Grade inserted successfully" });
         }
     } catch (error) {
@@ -51,11 +42,9 @@ async function insertGrade(req, res) {
 
 // 2. GET MY GRADES (Student Only)
 async function getMyGrades(req, res) {
-    const student_id = req.user.userid; // Taken from JWT payload
+    const student_id = req.user.userid;
 
     try {
-        const connection = await db;
-        // SQL JOIN to get the Subject Name along with the marks
         const query = `
             SELECT r.*, s.subject_name 
             FROM results r
@@ -63,7 +52,7 @@ async function getMyGrades(req, res) {
             WHERE r.student_id = ?
             ORDER BY r.semester ASC
         `;
-        const myGrades = await connection.all(query, [student_id]);
+        const myGrades = await db.prepare(query, [student_id]).all();
         
         return res.status(StatusCodes.OK).json(myGrades);
     } catch (error) {
@@ -80,26 +69,22 @@ async function getChildGrades(req, res) {
     }
 
     try {
-        const connection = await dbPromise;
 
         // 1. Find the student linked to this parent
-        const studentInfo = await connection.get(
-            `SELECT student_id FROM students WHERE parent_id = ?`,
-            [req.user.userid]
-        );
+        const studentInfo = await db.prepare("SELECT student_id FROM students WHERE parent_id = ?").get(req.user.userid);
 
         if (!studentInfo) {
             return res.status(404).json({ msg: "No student linked to this parent account." });
         }
 
         // 2. Fetch grades for that specific student
-        const grades = await connection.all(
+        const grades = await db.prepare(
             `SELECT r.*, s.subject_name 
              FROM results r
              JOIN subjects s ON r.subject_id = s.subject_id
              WHERE r.student_id = ?`,
             [studentInfo.student_id]
-        );
+        ).all();
 
         res.status(200).json(grades);
     } catch (error) {

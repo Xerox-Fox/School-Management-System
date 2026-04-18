@@ -1,3 +1,5 @@
+const db = require("../Data/dbConfig");
+
 async function report(req, res) {
     if (!req.user || req.user.user_type !== 'root') {
         return res.status(StatusCodes.FORBIDDEN).json({
@@ -12,17 +14,14 @@ async function report(req, res) {
     }
 
     try {
-        const connection = await db;
 
         // 1. Find the parent linked to this student by their name
         // We join 'users' and 'students' to find the parent_id
-        const studentInfo = await connection.get(
+        const studentInfo = await db.prepare(
             `SELECT s.parent_id, u.userid as student_id 
              FROM users u 
              JOIN students s ON u.userid = s.student_id 
-             WHERE u.name = ?`, 
-            [name]
-        );
+             WHERE u.name = ?`).get(name);
 
         if (!studentInfo || !studentInfo.parent_id) {
             return res.status(StatusCodes.NOT_FOUND).json({ 
@@ -37,7 +36,7 @@ async function report(req, res) {
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
 
-        await connection.run(query, [
+        db.prepare(query).run(
             name,
             grade,
             reason,
@@ -45,7 +44,7 @@ async function report(req, res) {
             importancy,
             studentInfo.parent_id,
             studentInfo.student_id
-        ]);
+        );
 
         return res.status(StatusCodes.CREATED).json({
             msg: "Parental Consultation filed successfully.",

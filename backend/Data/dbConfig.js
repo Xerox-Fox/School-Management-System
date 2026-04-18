@@ -1,12 +1,10 @@
-const sqlite3 = require('sqlite3');
-const { open } = require('sqlite');
+const Database = require('better-sqlite3');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const dbPromise = open({
-    filename: path.join(__dirname, 'database.db'),
-    driver: sqlite3.Database
-});
+const db = new Database(path.join(__dirname, 'database.db'));
+
+
 
 const users = `
   CREATE TABLE IF NOT EXISTS users (
@@ -22,11 +20,6 @@ const users = `
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `;
-
-const ROOT_EMAIL = 'LCCS@gmail.com';
-const ROOT_PHONE = '+251911000001';
-const ROOT_NAME = 'System Administrator';
-const ROOT_PASSWORD_PLAIN = 'LCCSroot2026!Secure';
 
 const classes = `
   CREATE TABLE IF NOT EXISTS classes (
@@ -110,67 +103,74 @@ const reason = `
   );
 `;
 
-// Initialize tables
-dbPromise.then(async (db) => {
-    await db.run(users);
-    console.log("user table created");
-    
-    await db.run(classes);
-    console.log("classes table created");
-    
-    await db.run(students);
-    console.log("students table created");
-    
-    await db.run(subjects);
-    console.log("subjects table created");
 
-    
-    await db.run(results);
-    console.log("results table created");
 
-    await db.run(class_subjects);
-    console.log("class_subjects table created");
+try {
+  db.exec(users);
+  console.log("users table created");
 
-    await db.run(blogPosts);
-    console.log("blogPosts table created");
-    
-    await db.run(reason);
-    console.log("reasons table created");
-    
-    const existingRoot = await db.get(
-      'SELECT userid FROM users WHERE email = ? OR user_type = ?',
-      [ROOT_EMAIL, 'root']
+  db.exec(classes);
+  console.log("classes table created");
+
+  db.exec(students);
+  console.log("students table created");
+
+  db.exec(subjects);
+  console.log("subjects table created");
+
+  db.exec(results);
+  console.log("results table created");
+
+  db.exec(class_subjects);
+  console.log("class_subjects table created");
+
+  db.exec(blogPosts);
+  console.log("blogPosts table created");
+
+  db.exec(reason);
+  console.log("reasons table created");
+
+
+
+  const ROOT_EMAIL = 'LCCS@gmail.com';
+  const ROOT_PHONE = '+251911000001';
+  const ROOT_NAME = 'System Administrator';
+  const ROOT_PASSWORD_PLAIN = 'LCCSroot2026!Secure';
+
+  const existingRoot = db.prepare(
+    'SELECT userid FROM users WHERE email = ? OR user_type = ?'
+  ).get(ROOT_EMAIL, 'root');
+
+  if (!existingRoot) {
+    console.log("Creating initial ROOT account...");
+
+    const hashedPassword = bcrypt.hashSync(ROOT_PASSWORD_PLAIN, 12);
+
+    db.prepare(`
+      INSERT INTO users (display_id, name, email, password, phone, user_type)
+      VALUES (?, ?, ?, ?, ?, 'root')
+    `).run(
+      'ROOT',
+      ROOT_NAME,
+      ROOT_EMAIL,
+      hashedPassword,
+      ROOT_PHONE
     );
 
-    if (!existingRoot) {
-      console.log("Creating initial ROOT account...");
+    console.log(`
+ROOT ACCOUNT CREATED SUCCESSFULLY!
+Email: ${ROOT_EMAIL}
+Password: ${ROOT_PASSWORD_PLAIN}
+-> Change password immediately after first login!
+-> Delete creation block after first run.
+`);
+  } else {
+    console.log("Root account already exists - skipping creation.");
+  }
 
-      const hashedPassword = await bcrypt.hash(ROOT_PASSWORD_PLAIN, 12);
+} catch (err) {
+  console.error("Database initialization failed", err);
+}
 
-      await db.run(
-        `INSERT INTO users (display_id, name, email, password, phone, user_type)
-        VALUES (?, ?, ?, ?, ?, 'root')`,
-        [
-          'ROOT',
-          ROOT_NAME,
-          ROOT_EMAIL,
-          hashedPassword,
-          ROOT_PHONE
-        ]
-      );
 
-      console.log(`
-        ROOT ACCOUNT CREATED SUCCESSFULLY!
-        Email: ${ROOT_EMAIL}
-        Password: ${ROOT_PASSWORD_PLAIN}
-        -> Change password immediately after first login!
-        -> Delete creation block after first run.
-        `);
-    } else {
-      console.log("Root account already exists - skipping creation.");
-    }
-}).catch(err => {
-    console.error("Database initialization failed", err);
-});
-
-module.exports = dbPromise;
+module.exports = db;

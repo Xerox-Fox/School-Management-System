@@ -29,10 +29,9 @@ async function createPost(req, res) {
 
         const db = await conn; 
 
-        await db.run(
-            `INSERT INTO posts (title, content, author_id, image_url) VALUES (?, ?, ?, ?)`,
-            [title, content, author_id, images_json]
-        );
+        
+        await db.prepare("INSERT INTO posts (title, content, author_id, image_url) VALUES (?, ?, ?, ?)").run(title, content, author_id, images_json);
+
 
         return res.status(StatusCodes.ACCEPTED).json({ msg: "News posted successfully!", images });
 
