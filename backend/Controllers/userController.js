@@ -3,46 +3,60 @@ const bcrypt = require('bcryptjs');
 const { StatusCodes } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const nodemailer = require("nodemailer");
 
-function register(req, res) {
+
+
+async function register(req, res) {
     if (!req.user || req.user.user_type !== 'root') {
         return res.status(StatusCodes.FORBIDDEN).json({
             msg: "Access denied. Only root users can register new accounts."
         });
-    } 
+    }
 
     const { name, email, password, phone, address, user_type, subject } = req.body;
 
     if (!name || !email || !password || !phone || !address || !user_type) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ msg: "please provide all required information" });
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            msg: "please provide all required information"
+        });
     }
 
     try {
+        // CHECK USER EXISTS
         const existingUser = db.prepare(
             "SELECT userid FROM users WHERE email = ?"
         ).get(email);
 
         if (existingUser) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ msg: "user already registered" });
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                msg: "user already registered"
+            });
         }
 
+        // GENERATE PASSWORD
         const generatedPassword = crypto.randomBytes(4).toString('hex');
 
+        // PREFIX
         let prefix = "";
         if (user_type === 'student') prefix = "STU-";
         else if (user_type === 'teacher') prefix = "TEA-";
         else if (user_type === 'parent') prefix = "PRT-";
         else prefix = "ADM-";
 
+        // COUNT USERS
         const countData = db.prepare(
-            `SELECT COUNT(*) as total FROM users WHERE user_type = ?`
+            "SELECT COUNT(*) as total FROM users WHERE user_type = ?"
         ).get(user_type);
 
         const nextNumber = (countData.total + 1).toString().padStart(3, '0');
         const display_id = `${prefix}${nextNumber}`;
 
+        // HASH PASSWORD
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(generatedPassword, salt);
+
+        // INSERT USER
         db.prepare(`
             INSERT INTO users 
             (display_id, name, email, password, phone, address, user_type, subject) 
@@ -58,8 +72,30 @@ function register(req, res) {
             subject || null
         );
 
-        return res.status(StatusCodes.CREATED).json({ 
-            msg: "user registered", 
+        // EMAIL SETUP
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "your_email@gmail.com",
+                pass: "your_app_password"
+            }
+        });
+
+        await transporter.sendMail({
+            from: '"School System" <your_email@gmail.com>',
+            to: email,
+            subject: "Account Created Successfully",
+            html: `
+                <h2>Welcome ${name}</h2>
+                <p>Your account has been created successfully.</p>
+                <p><b>Role:</b> ${user_type}</p>
+                <p><b>Temporary Password:</b> ${generatedPassword}</p>
+                <p>Please log in and change your password immediately.</p>
+            `
+        });
+
+        return res.status(StatusCodes.CREATED).json({
+            msg: "user registered",
             display_id,
             Password: generatedPassword,
             Subject: user_type === 'teacher' ? subject : "N/A"
@@ -67,7 +103,9 @@ function register(req, res) {
 
     } catch (error) {
         console.log(error.message);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: "something went wrong, try again later!" });
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "something went wrong, try again later!"
+        });
     }
 }
 
