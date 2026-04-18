@@ -270,9 +270,7 @@ body {
 .post-images{
     display: flex;
     gap: 10px;
-    flex-direction: column;
     flex-wrap: wrap;
-    width: 100%;
     border-top: 1px solid #ebedf0;
 }
 
@@ -286,11 +284,10 @@ body {
 .post-images img {
     width: 100%;
     max-width: 250px;
-    height: 500px;
-    max-height: 400px;
+    height: auto;
     object-fit: cover;
-    display: block;
     border-top: 1px solid #ebedf0;
+    border-radius: 8px;
 }
 
 .post-images:not(.grid-2) img {

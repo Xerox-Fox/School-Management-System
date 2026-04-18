@@ -271,8 +271,6 @@ body {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    flex-direction: column;
-    width: 100%;
     border-top: 1px solid #ebedf0;
 }
 
@@ -286,10 +284,9 @@ body {
 .post-images img {
     width: 100%;
     max-width: 250px;
-    height: 500px;
-    max-height: 400px;
+    height: auto;
     object-fit: cover;
-    display: block;
+    border-radius: 8px;
     border-top: 1px solid #ebedf0;
 }
 
