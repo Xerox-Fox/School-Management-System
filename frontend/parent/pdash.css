@@ -266,8 +266,8 @@ body {
 
 .post-images{
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
     border-top: 1px solid #ebedf0;
 }
 
@@ -280,10 +280,10 @@ body {
 
 .post-images img {
     width: 100%;
-    max-width: 250px;
-    height: auto;
+    height: 500px;
+    max-height: 400px;
     object-fit: cover;
-    border-radius: 8px;
+    display: block;
     border-top: 1px solid #ebedf0;
 }
 
@@ -315,14 +315,4 @@ body {
     width: 100%;
     margin: 0;
     padding: 0;
-}
-
-@media (max-width: 768px) {
-    .post-images {
-        flex-direction: column;
-    }
-
-    .post-images img {
-        max-width: 100%
-    }
 }
