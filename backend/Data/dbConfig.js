@@ -2,7 +2,6 @@ const Database = require('better-sqlite3');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const path = require("path");
 
 const db = path.join(__dirname, "database.db");
 
