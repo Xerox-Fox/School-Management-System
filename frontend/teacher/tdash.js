@@ -93,7 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 4. Initialize Background Tasks
     checkNotifications();
-    setInterval(checkNotifications, 120000); 
+    setInterval(checkNotifications, 120000);
+    loadDropdowns(); 
 });
 
 // --- KEEP YOUR EXISTING DATA FETCHING FUNCTIONS (fetchMyGrades, checkNotifications, renderNews) BELOW ---

@@ -182,16 +182,18 @@ function checkUser(req, res) {
     });
 }
 
-const getAllUsers = (req, res) => {
+function getAllUsers(req, res) {
     try {
         const users = db.prepare(`
-            SELECT userid, name, display_id, user_type FROM users
+            SELECT userid, name, display_id, user_type 
+            FROM users
         `).all();
 
-        res.status(200).json(users);
+        res.json(users);
     } catch (error) {
+        console.error("Get Users Error:", error);
         res.status(500).json({ msg: "Database error" });
     }
-};
+}
 
 module.exports = { register, login, logout, checkUser, getAllUsers };
