@@ -6,6 +6,6 @@ const { report, getParentReports } = require('../Controllers/reportController');
 
 // ROOT: Files the report
 router.post('/report', authMiddleware, report);
-router.post('/child-report', authMiddleware, getParentReports);
+router.get('/child-report', authMiddleware, getParentReports);
 
 module.exports = router;
