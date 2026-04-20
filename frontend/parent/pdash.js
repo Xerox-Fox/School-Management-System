@@ -214,7 +214,7 @@ async function checkNotifications() {
     if (!overlay) return;
 
     try {
-        const response = await fetch("https://lms-backend-zghq.onrender.com/api/report-st/my-reports", {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/report-st/child-report", {
             headers: { "Authorization": `Bearer ${token}` }
         });
 
