@@ -501,8 +501,8 @@ input:focus, select:focus {
     display: block !important;
 }
 
-#add.active,
-#report.active {
+#addArea.active,
+#reportArea.active {
     display: flex;
     flex-direction: column;
     align-items: center;
