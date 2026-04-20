@@ -187,18 +187,32 @@ function checkUser(req, res) {
     });
 }
 
-function getAllUsers(req, res) {
+const getAllUsers = (req, res) => {
     try {
+        if (req.user.user_type !== 'root') {
+            return res.status(403).json({ msg: "Admins only" });
+        }
+
         const users = db.prepare(`
-            SELECT userid, name, display_id, user_type 
+            SELECT 
+                userid,
+                name,
+                email,
+                phone,
+                address,
+                display_id,
+                user_type,
+                subject,
+                created_at
             FROM users
+            ORDER BY created_at DESC
         `).all();
 
-        res.json(users);
+        res.status(200).json(users);
     } catch (error) {
-        console.error("Get Users Error:", error);
+        console.error(error);
         res.status(500).json({ msg: "Database error" });
     }
-}
+};
 
 module.exports = { register, login, logout, checkUser, getAllUsers };

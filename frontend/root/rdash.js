@@ -271,3 +271,42 @@ navLinks.forEach(link => {
         }
     });
 });
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString(); // nice readable format
+}
+
+async function loadUsers() {
+    const token = localStorage.getItem("token");
+    const tableBody = document.getElementById("usersTableBody");
+
+    try {
+        const response = await fetch("https://lms-backend-zghq.onrender.com/api/users/all", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const users = await response.json();
+        tableBody.innerHTML = "";
+
+        users.forEach(user => {
+            const row = `
+                <tr>
+                    <td>${user.userid}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.user_type}</td>
+                    <td>${user.subject || "-"}</td>
+                    <td>${formatDate(user.created_at)}</td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
+}
