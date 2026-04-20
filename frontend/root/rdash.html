@@ -187,42 +187,49 @@
         </div>
 
         <div class="content-section" id="analytics">
-            <div class="text">Analytics</div>
-            <div style="display: flex; gap: 20px; margin-top: 20px;">
-                <div style="flex: 2; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
-                    <h3 style="color: #707070; margin-bottom: 15px;">User Distribution</h3>
-                    <div style="height: 300px;"><canvas id="analChart"></canvas></div>
+        <div class="text">Analytics</div>
+
+        <!-- TOP ROW (charts + stats) -->
+        <div style="display: flex; gap: 20px; margin-top: 20px;">
+            <div style="flex: 2; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
+                <h3 style="color: #707070; margin-bottom: 15px;">User Distribution</h3>
+                <div style="height: 300px;">
+                    <canvas id="analChart"></canvas>
                 </div>
-                <div style="flex: 1; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center;">
-                    <h3 style="color: #707070;">Total Registered</h3>
-                    <h1 id="totalUserCount" style="font-size: 5rem; color: #203791; margin: 20px 0;">0</h1>
-                    <p style="color: #707070;">Users currently in database</p>
-                </div> <br> <br>
-                <div id="users-section">
-                <h3>All Users</h3>
-
-                <table id="usersTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Role</th>
-                            <th>Subject</th>
-                            <th>Joined</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="usersTableBody">
-                        <tr>
-                            <td colspan="7">Loading users...</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
+
+            <div style="flex: 1; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center;">
+                <h3 style="color: #707070;">Total Registered</h3>
+                <h1 id="totalUserCount" style="font-size: 5rem; color: #203791; margin: 20px 0;">0</h1>
+                <p style="color: #707070;">Users currently in database</p>
             </div>
         </div>
+
+        <!-- ✅ USERS TABLE NOW BELOW -->
+        <div id="users-section">
+            <h3>All Users</h3>
+
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Subject</th>
+                        <th>Joined</th>
+                    </tr>
+                </thead>
+
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="7">Loading users...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     </main>
     <script src="rdash.js"></script>
 
