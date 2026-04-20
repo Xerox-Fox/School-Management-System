@@ -198,7 +198,10 @@
                     <h1 id="totalUserCount" style="font-size: 5rem; color: #203791; margin: 20px 0;">0</h1>
                     <p style="color: #707070;">Users currently in database</p>
                 </div>
-                <div>
+                <div id="users-section">
+                <h3>All Users</h3>
+
+                <table id="usersTable">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -211,8 +214,13 @@
                         </tr>
                     </thead>
 
-                    <tbody id="usersTableBody"></tbody>
-                </div>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="7">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             </div>
         </div>
     </main>
