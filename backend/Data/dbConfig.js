@@ -22,6 +22,8 @@ const users = `
     user_type TEXT CHECK(user_type IN ('student', 'teacher', 'parent', 'root')) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+  UPDATE users
+  SET user_type = LOWER(TRIM(user_type));
 `;
 
 const classes = `
