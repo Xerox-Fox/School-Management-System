@@ -125,7 +125,10 @@ function renderSingleChart(canvasId, stats, key) {
 }
 
 
-document.addEventListener("DOMContentLoaded", refreshAllCharts);
+document.addEventListener("DOMContentLoaded", () => {
+    loadUsers();
+    refreshAllCharts();
+});
 
 
 if (blogForm) {
