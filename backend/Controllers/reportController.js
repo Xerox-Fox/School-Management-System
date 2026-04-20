@@ -1,6 +1,7 @@
 const db = require("../Data/dbConfig");
+const { StatusCodes } = require("http-status-codes");
 
-async function report(req, res) {
+function report(req, res) {
     if (!req.user || req.user.user_type !== 'root') {
         return res.status(StatusCodes.FORBIDDEN).json({
             msg: "Access denied. Only root users can file reports."
@@ -10,59 +11,101 @@ async function report(req, res) {
     const { name, grade, reason, full_reason, importancy } = req.body;
 
     if (!name || !grade || !reason || !full_reason || !importancy) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Please provide all required information" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ 
+            msg: "Please provide all required information" 
+        });
     }
 
     try {
+        // Get student ID from name
+        const student = db.prepare(`
+            SELECT userid FROM users WHERE name = ?
+        `).get(name);
 
-        // 1. Find the parent linked to this student by their name
-        // We join 'users' and 'students' to find the parent_id
-        const studentInfo = await db.prepare(
-            `SELECT s.parent_id, u.userid as student_id 
-             FROM users u 
-             JOIN students s ON u.userid = s.student_id 
-             WHERE u.name = ?`).get(name);
-
-        if (!studentInfo || !studentInfo.parent_id) {
-            return res.status(StatusCodes.NOT_FOUND).json({ 
-                msg: "Could not find a student with that name or a linked parent." 
+        if (!student) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                msg: "Student not found"
             });
         }
 
-        // 2. Save the report to the 'reason' table
-        const query = `
+        db.prepare(`
             INSERT INTO reason 
-            (name, grade, reason, full_reason, importancy, parent_id, student_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
-
-        db.prepare(query).run(
+            (st_id, name, grade, reason, full_reason, importancy) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `).run(
+            student.userid,
             name,
             grade,
             reason,
             full_reason,
-            importancy,
-            studentInfo.parent_id,
-            studentInfo.student_id
+            importancy
         );
 
         return res.status(StatusCodes.CREATED).json({
-            msg: "Parental Consultation filed successfully.",
-            student: name,
-            parent_notified: true
+            msg: "Report saved successfully"
         });
 
     } catch (error) {
-        if (error.message.includes("Check constraint failed")) {
-            return res.status(StatusCodes.BAD_GATEWAY).json({
-                msg: "Invalid priority level. Use: Low, Medium, High."
-            });
-        }
-        console.error("Report Error:", error.message);
+        console.error("Report Error:", error);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "Failed to save report."
+            msg: "Failed to save report"
         });
     }
 }
 
-module.exports = { report };
+function getParentReports(req, res) {
+    if (!req.user || req.user.user_type !== 'parent') {
+        return res.status(403).json({
+            msg: "Access denied. Parents only."
+        });
+    }
+
+    try {
+        const parent_id = req.user.userid;
+
+        const reports = db.prepare(`
+            SELECT 
+                r.*,
+                stu.name AS student_fullname,
+                par.name AS parent_fullname
+            FROM reason r
+            JOIN students s ON r.st_id = s.student_id
+            JOIN users stu ON stu.userid = s.student_id
+            JOIN users par ON par.userid = s.parent_id
+            WHERE s.parent_id = ?
+            ORDER BY r.res_id DESC
+        `).all(parent_id);
+
+        if (!reports.length) {
+            return res.status(404).json({
+                msg: "No reports found for your child."
+            });
+        }
+
+        // Format names (first name parent, last name student)
+        const formatted = reports.map(r => {
+            const parentFirst = r.parent_fullname.split(" ")[0];
+            const studentLast = r.student_fullname.split(" ").slice(-1).join(" ");
+
+            return {
+                parent: parentFirst,
+                child: studentLast,
+                grade: r.grade,
+                reason: r.reason,
+                full_reason: r.full_reason,
+                importancy: r.importancy,
+                created_at: r.res_id
+            };
+        });
+
+        return res.status(200).json(formatted);
+
+    } catch (error) {
+        console.error("Parent Report Error:", error);
+        return res.status(500).json({
+            msg: "Failed to fetch reports"
+        });
+    }
+}
+
+module.exports = { report, getParentReports };

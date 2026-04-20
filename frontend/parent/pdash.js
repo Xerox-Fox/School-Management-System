@@ -209,28 +209,51 @@ async function fetchMyGrades() {
 
 async function checkNotifications() {
     const token = localStorage.getItem("token");
-    const notifWindow = document.getElementById("notification-window");
-    if (!notifWindow) return;
+    const overlay = document.getElementById("notification-overlay");
+
+    if (!overlay) return;
 
     try {
         const response = await fetch("https://lms-backend-zghq.onrender.com/api/report-st/my-reports", {
             headers: { "Authorization": `Bearer ${token}` }
         });
+
         if (!response.ok) return;
 
         const reports = await response.json();
-        if (reports.length > 0) {
-            const latest = reports[0]; 
-            document.getElementById("notif-title").innerText = `New Report: ${latest.reason}`;
-            document.getElementById("notif-message").innerText = latest.full_reason;
-            
-            const priorityColors = { "High": "#ff4d4d", "Medium": "#ffa500", "Low": "#203791" };
-            notifWindow.style.borderLeft = `5px solid ${priorityColors[latest.importancy] || "#203791"}`;
-            notifWindow.style.display = "block";
 
-            document.getElementById("close-notif").onclick = () => { notifWindow.style.display = "none"; };
+        if (reports.length > 0) {
+            const latest = reports[0];
+
+            // Fill data
+            document.getElementById("notif-title").innerText = `Report: ${latest.reason}`;
+            document.getElementById("notif-student").innerText = latest.name;
+            document.getElementById("notif-grade").innerText = latest.grade;
+            document.getElementById("notif-type").innerText = latest.reason;
+            document.getElementById("notif-message").innerText = latest.full_reason;
+            document.getElementById("notif-priority").innerText = latest.importancy;
+            document.getElementById("notif-time").innerText =
+                new Date(latest.created_at || Date.now()).toLocaleString();
+
+            // Priority color
+            const colors = {
+                High: "#ff4d4d",
+                Medium: "#ffa500"
+            };
+
+            document.getElementById("notification-window").style.borderTop =
+                `5px solid ${colors[latest.importancy] || "#203791"}`;
+
+            // SHOW MODAL (centered)
+            overlay.style.display = "flex";
+
+            // Close
+            document.getElementById("close-notif").onclick = () => {
+                overlay.style.display = "none";
+            };
         }
+
     } catch (err) {
-        console.error("Notification fetch failed", err);
+        console.error("Notification error:", err);
     }
 }

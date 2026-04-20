@@ -312,3 +312,56 @@ body {
     margin: 0;
     padding: 0;
 }
+
+/* Overlay (dark background) */
+#notification-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+/* Modal box */
+#notification-window {
+    width: 90%;
+    max-width: 500px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+/* Header */
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.notif-header h3 {
+    color: #203791;
+}
+
+#close-notif {
+    cursor: pointer;
+    font-size: 22px;
+}
+
+/* Body */
+.notif-body {
+    margin-top: 15px;
+}
+
+.notif-body p {
+    margin-bottom: 8px;
+    color: #444;
+}

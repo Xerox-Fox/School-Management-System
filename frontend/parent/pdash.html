@@ -73,6 +73,25 @@
             <small id="notif-time" style="color: #aaa; font-size: 0.7rem;"></small>
         </div>
 
+        <div id="notification-overlay">
+            <div id="notification-window">
+                <div class="notif-header">
+                    <h3 id="notif-title">New Report</h3>
+                    <i class="bx bx-x" id="close-notif"></i>
+                </div>
+
+                <div class="notif-body">
+                    <p><strong>Student:</strong> <span id="notif-student"></span></p>
+                    <p><strong>Grade:</strong> <span id="notif-grade"></span></p>
+                    <p><strong>Type:</strong> <span id="notif-type"></span></p>
+                    <p><strong>Details:</strong></p>
+                    <p id="notif-message"></p>
+                    <p><strong>Priority:</strong> <span id="notif-priority"></span></p>
+                    <small id="notif-time"></small>
+                </div>
+            </div>
+        </div>
+
         <style>
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
