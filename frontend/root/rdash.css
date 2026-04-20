@@ -512,10 +512,6 @@ input:focus, select:focus {
 body.user-is-root #rootPostArea { display: block; }
 
 
-#analytics {
-    padding-bottom: 40px;
-}
-
 
 #users-section {
     margin: 30px auto 0 auto;
