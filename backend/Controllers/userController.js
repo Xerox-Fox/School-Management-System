@@ -138,7 +138,12 @@ function login(req, res) {
         const user_type = user.user_type;
 
         const token = jwt.sign(
-            { fullname, userid, display_id, user_type },
+            {
+                fullname,
+                userid,
+                display_id,
+                user_type: user_type.toLowerCase().trim()
+            },
             "secret",
             { expiresIn: "1d" }
         );
