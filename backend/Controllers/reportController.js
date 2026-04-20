@@ -1,4 +1,5 @@
 const db = require("../Data/dbConfig");
+const ROLES = require("./roles");
 const { StatusCodes } = require("http-status-codes");
 
 function report(req, res) {
@@ -54,10 +55,21 @@ function report(req, res) {
 }
 
 function getParentReports(req, res) {
-    if (!req.user || req.user.user_type !== 'parent') {
-        return res.status(403).json({
-            msg: "Access denied. Parents only."
-        });
+    const userRole = req.user.user_type;
+
+    // convert string → number IF needed
+    const roleValue =
+        typeof userRole === "string"
+            ? {
+                root: 1,
+                teacher: 2,
+                student: 3,
+                parent: 4
+            }[userRole.toLowerCase()]
+            : userRole;
+
+    if (roleValue !== ROLES.PARENT) {
+        return res.status(403).json({ msg: "Access denied. Parents only." });
     }
 
     try {
