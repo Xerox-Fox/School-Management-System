@@ -33,7 +33,7 @@
                         </a>
                 </li>
                 <li class="nav-link">
-                        <a href="#notification-window">
+                        <a href="#" onclick="checkNotifications()">
                             <i class="ri-notification-line icon"></i>
                             <span class="text nav-text">Notifications</span>
                         </a>
@@ -63,15 +63,6 @@
             <div id="news-posts-container"></div>
         </div>
     </div>
-
-        <div id="notification-window" style="display: none; position: fixed; top: 20px; right: 20px; width: 320px; background: white; border-left: 5px solid #203791; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; z-index: 1000; padding: 15px; animation: slideIn 0.5s ease;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <h4 id="notif-title" style="margin: 0; color: #203791; font-size: 1rem;">New Report</h4>
-                <i class="bx bx-x" id="close-notif" style="cursor: pointer; color: #707070;"></i>
-            </div>
-            <p id="notif-message" style="margin: 10px 0; color: #555; font-size: 0.85rem; line-height: 1.4;"></p>
-            <small id="notif-time" style="color: #aaa; font-size: 0.7rem;"></small>
-        </div>
 
         <div id="notification-overlay">
             <div id="notification-window">

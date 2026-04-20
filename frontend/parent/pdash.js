@@ -221,6 +221,7 @@ async function checkNotifications() {
         if (!response.ok) return;
 
         const reports = await response.json();
+        console.log(reports);
 
         if (reports.length > 0) {
             const latest = reports[0];
