@@ -318,35 +318,26 @@ async function loadUsers() {
 
 async function loadAttendance() {
     const token = localStorage.getItem("token");
-    const tableBody = document.getElementById("attendanceTableBody");
 
-    try {
-        const res = await fetch("https://lms-backend-zghq.onrender.com/api/at/all", {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+    const response = await fetch("https://lms-backend-zghq.onrender.com/api/at/all", {
+        headers: { Authorization: `Bearer ${token}` }
+    });
 
-        const data = await res.json();
+    const data = await response.json();
 
-        tableBody.innerHTML = "";
+    const table = document.getElementById("attendanceTableBody");
+    table.innerHTML = "";
 
-        data.forEach(att => {
-            tableBody.innerHTML += `
-                <tr>
-                    <td>${att.name}</td>
-                    <td>${att.date}</td>
-                    <td>${att.status}</td>
-                    <td>${new Date(att.created_at).toLocaleString()}</td>
-                </tr>
-            `;
-        });
+    data.forEach(item => {
+        const row = document.createElement("tr");
 
-    } catch (err) {
-        tableBody.innerHTML = `<tr><td colspan="4">Failed to load</td></tr>`;
-        console.error("🔥 FULL ATTENDANCE ERROR:", err);
-         return res.status(500).json({
-            msg: "Failed to fetch attendance",
-            error: err.message,
-            stack: err.stack
-        });
-    }
+        row.innerHTML = `
+            <td>${item.teacher_id}</td>
+            <td>${item.teacher_name}</td>
+            <td>${item.date}</td>
+            <td>${item.status}</td>
+        `;
+
+        table.appendChild(row);
+    });
 }

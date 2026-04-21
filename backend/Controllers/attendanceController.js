@@ -36,20 +36,22 @@ async function getAllAttendance(req, res) {
 
     try {
         const records = db.prepare(`
-            SELECT a.*, u.fullname
+            SELECT 
+                a.teacher_id,
+                u.name AS teacher_name,
+                a.date,
+                a.status
             FROM attendance a
             JOIN users u ON a.teacher_id = u.userid
             ORDER BY a.date DESC
         `).all();
 
+        // IMPORTANT: return ARRAY directly (like users endpoint)
         return res.json(records);
 
     } catch (err) {
-        console.error("Attendance Fetch Error:", err.message);
-        return res.status(500).json({
-            msg: "Failed to fetch attendance",
-            error: err.message
-        });
+        console.error("Attendance Error:", err.message);
+        return res.status(500).json({ msg: "Database error" });
     }
 }
 
