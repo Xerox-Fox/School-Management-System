@@ -7,6 +7,7 @@ const userRoutes = require("./Routes/userRoute");
 const reportRoute = require("./Routes/reportRoute");
 const blogRoute = require("./Routes/blogRoute");
 const gradeRoute = require("./Routes/gradeRoute");
+const attendanceRoute = require("./Routes/attendanceRoute");
 
 // just load DB (no await needed)
 require("./Data/dbConfig");
@@ -22,6 +23,7 @@ app.use("/api/users", userRoutes);
 app.use('/api/report-st', reportRoute);
 app.use('/api/blog', blogRoute);
 app.use('/api/results', gradeRoute);
+app.use('/api/at/', attendanceRoute);
 
 // start server directly
 app.listen(port, () => {

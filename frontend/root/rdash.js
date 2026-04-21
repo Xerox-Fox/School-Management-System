@@ -128,6 +128,8 @@ function renderSingleChart(canvasId, stats, key) {
 document.addEventListener("DOMContentLoaded", () => {
     loadUsers();
     refreshAllCharts();
+    loadAttendance();
+    setInterval(loadAttendance, 10000); 
 });
 
 
@@ -311,5 +313,34 @@ async function loadUsers() {
 
     } catch (err) {
         console.error(err);
+    }
+}
+
+async function loadAttendance() {
+    const token = localStorage.getItem("token");
+    const tableBody = document.getElementById("attendanceTableBody");
+
+    try {
+        const res = await fetch("https://your-backend/api/at/all", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+
+        tableBody.innerHTML = "";
+
+        data.forEach(att => {
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${att.name}</td>
+                    <td>${att.date}</td>
+                    <td>${att.status}</td>
+                    <td>${new Date(att.created_at).toLocaleString()}</td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        tableBody.innerHTML = `<tr><td colspan="4">Failed to load</td></tr>`;
     }
 }

@@ -108,6 +108,17 @@ const reason = `
   );
 `;
 
+const attendance = `
+CREATE TABLE IF NOT EXISTS attendance (
+    att_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teacher_id INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    status TEXT CHECK(status IN ('Present', 'Absent', 'Late')) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (teacher_id) REFERENCES users(userid)
+);
+`;
+
 
 
 try {
@@ -134,6 +145,9 @@ try {
 
   db.exec(reason);
   console.log("reasons table created");
+
+  db.exec(attendance);
+  console.log("attendance table created");
 
 
 
