@@ -342,5 +342,10 @@ async function loadAttendance() {
 
     } catch (err) {
         tableBody.innerHTML = `<tr><td colspan="4">Failed to load</td></tr>`;
+        console.error("🔥 FULL ATTENDANCE ERROR:", err);
+        res.status(500).json({
+            msg: "Failed to fetch attendance",
+            error: err.message,
+            stack: err.stack
+        });
     }
-}
