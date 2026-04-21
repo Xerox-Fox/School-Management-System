@@ -125,6 +125,14 @@ function renderSingleChart(canvasId, stats, key) {
 }
 
 
+console.log("ATTENDANCE RESPONSE:", data);
+
+if (!Array.isArray(data)) {
+    console.error("Invalid attendance format:", data);
+    return;
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
     loadUsers();
     refreshAllCharts();

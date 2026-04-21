@@ -1,64 +1,91 @@
 const db = require("../Data/dbConfig");
+const { StatusCodes } = require("http-status-codes");
 
-// TEACHER: mark attendance
+/* -------------------------------
+   MARK ATTENDANCE (TEACHER ONLY)
+--------------------------------*/
 async function markAttendance(req, res) {
     if (!req.user || req.user.user_type !== 'teacher') {
-        return res.status(403).json({ msg: "Only teachers can mark attendance" });
+        return res.status(StatusCodes.FORBIDDEN).json({
+            msg: "Only teachers can mark attendance"
+        });
     }
 
     const { status } = req.body;
     const teacher_id = req.user.userid;
     const date = new Date().toISOString().split('T')[0];
 
+    if (!status) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            msg: "Status is required"
+        });
+    }
+
     try {
+        // check duplicate
         const existing = db.prepare(
             "SELECT * FROM attendance WHERE teacher_id = ? AND date = ?"
         ).get(teacher_id, date);
 
         if (existing) {
-            return res.status(400).json({ msg: "Attendance already submitted today" });
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                msg: "Attendance already submitted today"
+            });
         }
 
         db.prepare(
-            "INSERT INTO attendance (teacher_id, date, status) VALUES (?, ?, ?)"
+            `INSERT INTO attendance (teacher_id, date, status)
+             VALUES (?, ?, ?)`
         ).run(teacher_id, date, status);
 
-        return res.status(201).json({ msg: "Attendance recorded" });
+        return res.status(StatusCodes.CREATED).json({
+            msg: "Attendance recorded successfully"
+        });
 
-    } catch (err) {
-        console.error("Mark Attendance Error:", err.message);
-        return res.status(500).json({ msg: "Database error", error: err.message });
+    } catch (error) {
+        console.error("MARK ATTENDANCE ERROR:", error.message);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "Database error"
+        });
     }
 }
 
-
-// ROOT: get all attendance
+/* -------------------------------
+   GET ALL ATTENDANCE (ROOT ONLY)
+--------------------------------*/
 async function getAllAttendance(req, res) {
     if (!req.user || req.user.user_type !== 'root') {
-        return res.status(403).json({ msg: "Access denied" });
+        return res.status(StatusCodes.FORBIDDEN).json({
+            msg: "Access denied"
+        });
     }
 
     try {
         const records = db.prepare(`
             SELECT 
+                a.att_id,
                 a.teacher_id,
-                u.fullname AS teacher_name,
+                u.name,
+                u.display_id,
                 a.date,
-                a.status
+                a.status,
+                a.created_at
             FROM attendance a
             JOIN users u ON a.teacher_id = u.userid
-            ORDER BY a.date DESC
+            ORDER BY a.created_at DESC
         `).all();
 
-        return res.json(records);
+        return res.status(StatusCodes.OK).json(records);
 
-    } catch (err) {
-        console.error("🔥 Attendance Fetch Error:", err.message);
-        return res.status(500).json({ 
-            msg: "Database error",
-            error: err.message 
+    } catch (error) {
+        console.error("GET ATTENDANCE ERROR:", error.message);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "Failed to fetch attendance"
         });
     }
 }
 
-module.exports = { markAttendance, getAllAttendance };
+module.exports = {
+    markAttendance,
+    getAllAttendance
+};

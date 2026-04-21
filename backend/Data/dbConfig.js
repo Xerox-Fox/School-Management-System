@@ -113,9 +113,9 @@ CREATE TABLE IF NOT EXISTS attendance (
     att_id INTEGER PRIMARY KEY AUTOINCREMENT,
     teacher_id INTEGER NOT NULL,
     date TEXT NOT NULL,
-    status TEXT CHECK(status IN ('Present', 'Absent', 'Late')) NOT NULL,
+    status TEXT CHECK(status IN ('Present', 'Absent')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (teacher_id) REFERENCES users(userid)
+    FOREIGN KEY (teacher_id) REFERENCES users(userid) ON DELETE CASCADE
 );
 `;
 
