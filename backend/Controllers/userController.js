@@ -1,4 +1,4 @@
-const db = require("../Data/dbConfig");
+const supabase = require("../Data/dbConfig"); // Now importing the Supabase client
 const bcrypt = require("bcryptjs");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
@@ -23,170 +23,102 @@ async function register(req, res) {
         }
 
         // CHECK USER EXISTS
-        const existingUser = await db.query(
-            "SELECT userid FROM users WHERE email = $1",
-            [email]
-        );
+        const { data: existingUser, error: checkError } = await supabase
+            .from('users')
+            .select('userid')
+            .eq('email', email)
+            .maybeSingle();
 
-        if (existingUser.rows.length > 0) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                msg: "user already registered"
-            });
+        if (existingUser) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ msg: "user already registered" });
         }
 
-        // GENERATE PASSWORD
+        // GENERATE PASSWORD & PREFIX
         const generatedPassword = crypto.randomBytes(4).toString("hex");
+        let prefix = user_type === "student" ? "STU-" : user_type === "teacher" ? "TEA-" : user_type === "parent" ? "PRT-" : "ADM-";
 
-        // PREFIX
-        let prefix = "ADM-";
-        if (user_type === "student") prefix = "STU-";
-        else if (user_type === "teacher") prefix = "TEA-";
-        else if (user_type === "parent") prefix = "PRT-";
+        // COUNT USERS for custom ID
+        const { count, error: countError } = await supabase
+            .from('users')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_type', user_type);
 
-        // COUNT USERS
-        const countResult = await db.query(
-            "SELECT COUNT(*) FROM users WHERE user_type = $1",
-            [user_type]
-        );
-
-        const count = parseInt(countResult.rows[0].count);
         const nextNumber = (count + 1).toString().padStart(3, "0");
-
         const display_id = `${prefix}${nextNumber}`;
 
-        // HASH PASSWORD
         const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
         // INSERT USER
-        await db.query(
-            `INSERT INTO users 
-            (display_id, name, email, password, phone, address, user_type, subject)
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-            [
+        const { error: insertError } = await supabase
+            .from('users')
+            .insert([{
                 display_id,
                 name,
                 email,
-                hashedPassword,
+                password: hashedPassword,
                 phone,
                 address,
                 user_type,
-                subject || null
-            ]
-        );
+                subject: subject || null
+            }]);
 
-        // EMAIL
+        if (insertError) throw insertError;
+
+        // EMAIL logic remains the same...
         const transporter = nodemailer.createTransport({
             service: "gmail",
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
+            auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
         });
 
         await transporter.sendMail({
             from: '"School System" <your_email@gmail.com>',
             to: email,
             subject: "Account Created Successfully",
-            html: `
-                <h2>Welcome ${name}</h2>
-                <p><b>Role:</b> ${user_type}</p>
-                <p><b>Password:</b> ${generatedPassword}</p>
-            `
+            html: `<h2>Welcome ${name}</h2><p><b>Password:</b> ${generatedPassword}</p>`
         });
 
         return res.status(StatusCodes.CREATED).json({
             msg: "user registered",
             display_id,
-            Password: generatedPassword,
-            Subject: user_type === "teacher" ? subject : "N/A"
+            Password: generatedPassword
         });
 
     } catch (error) {
         console.error("REGISTER ERROR:", error);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "something went wrong"
-        });
+        return res.status(500).json({ msg: "something went wrong", error: error.message });
     }
 }
 
 /* ---------------- LOGIN ---------------- */
 async function login(req, res) {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            msg: "please enter all required fields"
-        });
-    }
+    if (!email || !password) return res.status(400).json({ msg: "Missing fields" });
 
     try {
-        const result = await db.query(
-            `SELECT userid, display_id, name, password, user_type 
-             FROM users WHERE email = $1`,
-            [email]
-        );
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('userid, display_id, name, password, user_type')
+            .eq('email', email)
+            .single();
 
-        if (result.rows.length === 0) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                msg: "invalid credentials"
-            });
+        if (error || !user) {
+            return res.status(400).json({ msg: "invalid credentials" });
         }
-
-        const user = result.rows[0];
 
         const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                msg: "invalid credentials"
-            });
-        }
+        if (!isMatch) return res.status(400).json({ msg: "invalid credentials" });
 
         const token = jwt.sign(
-            {
-                fullname: user.name,
-                userid: user.userid,
-                display_id: user.display_id,
-                user_type: user.user_type.toLowerCase().trim()
-            },
+            { fullname: user.name, userid: user.userid, display_id: user.display_id, user_type: user.user_type.toLowerCase().trim() },
             "secret",
             { expiresIn: "1d" }
         );
 
-        return res.status(StatusCodes.OK).json({
-            msg: "user login successful",
-            token,
-            user: {
-                fullname: user.name,
-                display_id: user.display_id,
-                user_type: user.user_type
-            }
-        });
+        return res.status(200).json({ msg: "user login successful", token, user });
 
     } catch (error) {
-        console.error("LOGIN ERROR:", error);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "server error"
-        });
+        return res.status(500).json({ msg: "server error" });
     }
-}
-
-/* ---------------- LOGOUT ---------------- */
-function logout(req, res) {
-    return res.status(StatusCodes.OK).json({
-        msg: "Logged out successfully",
-        success: true
-    });
-}
-
-/* ---------------- CHECK USER ---------------- */
-function checkUser(req, res) {
-    return res.status(StatusCodes.OK).json({
-        msg: "valid user",
-        fullname: req.user.fullname,
-        userid: req.user.userid,
-        display_id: req.user.display_id
-    });
 }
 
 /* ---------------- GET ALL USERS ---------------- */
@@ -196,35 +128,18 @@ async function getAllUsers(req, res) {
             return res.status(403).json({ msg: "Admins only" });
         }
 
-        const result = await db.query(`
-            SELECT 
-                userid,
-                name,
-                email,
-                phone,
-                address,
-                display_id,
-                user_type,
-                subject,
-                created_at
-            FROM users
-            ORDER BY created_at DESC
-        `);
+        const { data, error } = await supabase
+            .from('users')
+            .select('userid, name, email, phone, address, display_id, user_type, subject, created_at')
+            .order('created_at', { ascending: false });
 
-        return res.status(200).json(result.rows);
+        if (error) throw error;
+
+        return res.status(200).json(data); // returns clean array for .forEach()
 
     } catch (error) {
-        console.error("GET USERS ERROR:", error);
-        return res.status(500).json({
-            msg: "Database error"
-        });
+        return res.status(500).json({ msg: "Database error" });
     }
 }
 
-module.exports = {
-    register,
-    login,
-    logout,
-    checkUser,
-    getAllUsers
-};
+module.exports = { register, login, logout: (req, res) => res.json({ msg: "Logged out" }), checkUser: (req, res) => res.json(req.user), getAllUsers };

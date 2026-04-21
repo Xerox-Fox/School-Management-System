@@ -1,4 +1,4 @@
-const db = require("../Data/dbConfig");
+const supabase = require("../Data/dbConfig");
 const ROLES = require("./roles");
 const { StatusCodes } = require("http-status-codes");
 
@@ -20,36 +20,35 @@ async function report(req, res) {
         }
 
         // Find student by name
-        const studentResult = await db.query(
-            "SELECT userid FROM users WHERE name = $1",
-            [name]
-        );
+        const { data: student, error: fetchError } = await supabase
+            .from('users')
+            .select('userid')
+            .eq('name', name)
+            .maybeSingle();
 
-        if (studentResult.rows.length === 0) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-                msg: "Student not found"
-            });
+        if (fetchError || !student) {
+            return res.status(StatusCodes.NOT_FOUND).json({ msg: "Student not found" });
         }
 
-        const studentId = studentResult.rows[0].userid;
+        // Insert report into 'reason' table
+        const { error: insertError } = await supabase
+            .from('reason')
+            .insert([{
+                st_id: student.userid,
+                name,
+                grade,
+                reason,
+                full_reason,
+                importancy
+            }]);
 
-        await db.query(
-            `INSERT INTO reason 
-            (st_id, name, grade, reason, full_reason, importancy)
-            VALUES ($1, $2, $3, $4, $5, $6)`,
-            [studentId, name, grade, reason, full_reason, importancy]
-        );
+        if (insertError) throw insertError;
 
-        return res.status(StatusCodes.CREATED).json({
-            msg: "Report saved successfully"
-        });
+        return res.status(StatusCodes.CREATED).json({ msg: "Report saved successfully" });
 
     } catch (error) {
         console.error("Report Error:", error);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "Failed to save report",
-            error: error.message
-        });
+        return res.status(500).json({ msg: "Failed to save report", error: error.message });
     }
 }
 
@@ -57,55 +56,44 @@ async function report(req, res) {
 async function getParentReports(req, res) {
     try {
         const userRole = req.user.user_type?.toLowerCase();
+        const roleMap = { root: 1, teacher: 2, student: 3, parent: 4 };
 
-        const roleMap = {
-            root: 1,
-            teacher: 2,
-            student: 3,
-            parent: 4
-        };
-
-        const roleValue = roleMap[userRole];
-
-        if (roleValue !== ROLES.PARENT) {
-            return res.status(403).json({
-                msg: "Access denied. Parents only."
-            });
+        if (roleMap[userRole] !== ROLES.PARENT) {
+            return res.status(403).json({ msg: "Access denied. Parents only." });
         }
 
         const parent_id = req.user.userid;
 
-        const result = await db.query(
-            `
-            SELECT 
-                r.*,
-                stu.name AS student_fullname,
-                par.name AS parent_fullname
-            FROM reason r
-            JOIN students s ON r.st_id = s.student_id
-            JOIN users stu ON stu.userid = s.student_id
-            JOIN users par ON par.userid = s.parent_id
-            WHERE s.parent_id = $1
-            ORDER BY r.res_id DESC
-            `,
-            [parent_id]
-        );
+        // JOINS in Supabase: Use nested select syntax
+        // This looks into the 'reason' table, joins 'students' via 'st_id', 
+        // then reaches into the 'users' table to get names.
+        const { data: reports, error } = await supabase
+            .from('reason')
+            .select(`
+                *,
+                students!inner (
+                    parent_id,
+                    student:users!st_id ( name ),
+                    parent:users!parent_id ( name )
+                )
+            `)
+            .eq('students.parent_id', parent_id)
+            .order('res_id', { ascending: false });
 
-        const reports = result.rows;
+        if (error) throw error;
 
         if (!reports || reports.length === 0) {
-            return res.status(404).json({
-                msg: "No reports found for your child."
-            });
+            return res.status(404).json({ msg: "No reports found for your child." });
         }
 
+        // Format the data to match your frontend's expectations
         const formatted = reports.map(r => {
-            const parentFirst = r.parent_fullname?.split(" ")[0] || "";
-            const studentLast = r.student_fullname?.split(" ").slice(-1).join(" ") || "";
+            const studentName = r.students?.student?.name || "";
+            const parentName = r.students?.parent?.name || "";
 
             return {
-                parent: parentFirst,
-                child: studentLast,
+                parent: parentName.split(" ")[0],
+                child: studentName.split(" ").slice(-1).join(" "),
                 grade: r.grade,
                 reason: r.reason,
                 full_reason: r.full_reason,
@@ -118,10 +106,7 @@ async function getParentReports(req, res) {
 
     } catch (error) {
         console.error("Parent Report Error:", error);
-        return res.status(500).json({
-            msg: "Failed to fetch reports",
-            error: error.message
-        });
+        return res.status(500).json({ msg: "Failed to fetch reports", error: error.message });
     }
 }
 

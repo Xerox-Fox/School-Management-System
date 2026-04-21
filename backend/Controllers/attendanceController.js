@@ -1,4 +1,4 @@
-const db = require("../Data/dbConfig");
+const supabase = require("../Data/dbConfig");
 const { StatusCodes } = require("http-status-codes");
 
 // MARK ATTENDANCE (TEACHER)
@@ -11,33 +11,33 @@ async function markAttendance(req, res) {
         }
 
         const { status } = req.body;
-
         if (!status) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                msg: "Status is required"
-            });
+            return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Status is required" });
         }
 
         const teacher_id = req.user.userid;
         const date = new Date().toISOString().split('T')[0];
 
-        // 🔄 CHECK DUPLICATE (POSTGRES)
-        const existing = await db.query(
-            "SELECT * FROM attendance WHERE teacher_id = $1 AND date = $2",
-            [teacher_id, date]
-        );
+        // 🔍 CHECK DUPLICATE
+        const { data: existing, error: checkError } = await supabase
+            .from('attendance')
+            .select('*')
+            .eq('teacher_id', teacher_id)
+            .eq('date', date)
+            .maybeSingle();
 
-        if (existing.rows.length > 0) {
+        if (existing) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 msg: "Attendance already submitted today"
             });
         }
 
-        // 🔄 INSERT (POSTGRES)
-        await db.query(
-            "INSERT INTO attendance (teacher_id, date, status) VALUES ($1, $2, $3)",
-            [teacher_id, date, status]
-        );
+        // ➕ INSERT
+        const { error: insertError } = await supabase
+            .from('attendance')
+            .insert([{ teacher_id, date, status }]);
+
+        if (insertError) throw insertError;
 
         return res.status(StatusCodes.CREATED).json({
             msg: "Attendance recorded successfully"
@@ -45,46 +45,48 @@ async function markAttendance(req, res) {
 
     } catch (err) {
         console.error("MARK ATTENDANCE ERROR:", err);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "Database error",
-            error: err.message
-        });
+        return res.status(500).json({ msg: "Database error", error: err.message });
     }
 }
-
 
 // GET ALL ATTENDANCE (ROOT)
 async function getAllAttendance(req, res) {
     try {
         if (!req.user || req.user.user_type !== 'root') {
-            return res.status(StatusCodes.FORBIDDEN).json({
-                msg: "Access denied"
-            });
+            return res.status(StatusCodes.FORBIDDEN).json({ msg: "Access denied" });
         }
 
-        // 🔄 POSTGRES QUERY
-        const result = await db.query(`
-            SELECT 
-                a.att_id,
-                a.teacher_id,
-                a.date,
-                a.status,
-                a.created_at,
-                u.name AS teacher_name,
-                u.display_id
-            FROM attendance a
-            LEFT JOIN users u ON a.teacher_id = u.userid
-            ORDER BY a.created_at DESC
-        `);
+        // 🔍 FETCH WITH JOIN
+        const { data, error } = await supabase
+            .from('attendance')
+            .select(`
+                att_id,
+                teacher_id,
+                date,
+                status,
+                created_at,
+                teacher:users!teacher_id (
+                    name,
+                    display_id
+                )
+            `)
+            .order('created_at', { ascending: false });
 
-        return res.status(StatusCodes.OK).json(result.rows || []);
+        if (error) throw error;
+
+        // Format to match your previous frontend expectations (flattening the join)
+        const formattedData = (data || []).map(row => ({
+            ...row,
+            teacher_name: row.teacher?.name || 'N/A',
+            display_id: row.teacher?.display_id || 'N/A'
+        }));
+
+        return res.status(StatusCodes.OK).json(formattedData);
 
     } catch (err) {
         console.error("GET ATTENDANCE ERROR:", err);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "Failed to fetch attendance",
-            error: err.message
-        });
+        // CRITICAL: We return an empty array [] on error to prevent the frontend .forEach() crash
+        return res.status(500).json([]); 
     }
 }
 
