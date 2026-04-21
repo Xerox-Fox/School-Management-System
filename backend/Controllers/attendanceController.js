@@ -1,3 +1,6 @@
+const db = require("../Data/dbConfig");
+
+// TEACHER: mark attendance
 async function markAttendance(req, res) {
     if (!req.user || req.user.user_type !== 'teacher') {
         return res.status(403).json({ msg: "Only teachers can mark attendance" });
@@ -8,8 +11,7 @@ async function markAttendance(req, res) {
     const date = new Date().toISOString().split('T')[0];
 
     try {
-        // Prevent duplicate attendance for same day
-        const existing = await db.prepare(
+        const existing = db.prepare(
             "SELECT * FROM attendance WHERE teacher_id = ? AND date = ?"
         ).get(teacher_id, date);
 
@@ -17,18 +19,20 @@ async function markAttendance(req, res) {
             return res.status(400).json({ msg: "Attendance already submitted today" });
         }
 
-        await db.prepare(
+        db.prepare(
             "INSERT INTO attendance (teacher_id, date, status) VALUES (?, ?, ?)"
         ).run(teacher_id, date, status);
 
-        res.status(201).json({ msg: "Attendance recorded" });
+        return res.status(201).json({ msg: "Attendance recorded" });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: "Database error" });
+        console.error("Mark Attendance Error:", err.message);
+        return res.status(500).json({ msg: "Database error", error: err.message });
     }
 }
 
+
+// ROOT: get all attendance
 async function getAllAttendance(req, res) {
     if (!req.user || req.user.user_type !== 'root') {
         return res.status(403).json({ msg: "Access denied" });
@@ -38,7 +42,7 @@ async function getAllAttendance(req, res) {
         const records = db.prepare(`
             SELECT 
                 a.teacher_id,
-                u.name AS teacher_name,
+                u.fullname AS teacher_name,
                 a.date,
                 a.status
             FROM attendance a
@@ -46,12 +50,14 @@ async function getAllAttendance(req, res) {
             ORDER BY a.date DESC
         `).all();
 
-        // IMPORTANT: return ARRAY directly (like users endpoint)
         return res.json(records);
 
     } catch (err) {
-        console.error("Attendance Error:", err.message);
-        return res.status(500).json({ msg: "Database error" });
+        console.error("🔥 Attendance Fetch Error:", err.message);
+        return res.status(500).json({ 
+            msg: "Database error",
+            error: err.message 
+        });
     }
 }
 
