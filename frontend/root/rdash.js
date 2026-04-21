@@ -319,21 +319,32 @@ async function loadUsers() {
 async function loadAttendance() {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("https://lms-backend-zghq.onrender.com/api/at/all", {
+    const res = await fetch("https://lms-backend-zghq.onrender.com/api/at/all", {
         headers: { Authorization: `Bearer ${token}` }
     });
 
-    const data = await response.json();
+    const data = await res.json();
+
+    console.log("ATTENDANCE RESPONSE:", data);
 
     const table = document.getElementById("attendanceTableBody");
     table.innerHTML = "";
 
-    data.forEach(item => {
+    // ✅ handle wrong responses safely
+    const records = Array.isArray(data) ? data : data.data;
+
+    if (!Array.isArray(records)) {
+        console.error("Invalid attendance format:", data);
+        table.innerHTML = `<tr><td colspan="4">No data / Access denied</td></tr>`;
+        return;
+    }
+
+    records.forEach(item => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
             <td>${item.teacher_id}</td>
-            <td>${item.teacher_name}</td>
+            <td>${item.teacher_name || "Unknown"}</td>
             <td>${item.date}</td>
             <td>${item.status}</td>
         `;
