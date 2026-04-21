@@ -241,7 +241,7 @@ async function submitAttendance() {
     const token = localStorage.getItem("token");
     const status = document.getElementById("attendanceStatus").value;
 
-    const res = await fetch("https://your-backend/api/at/mark", {
+    const res = await fetch("https://lms-backend-zghq.onrender.com/api/api/at/mark", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

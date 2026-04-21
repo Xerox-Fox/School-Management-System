@@ -321,7 +321,7 @@ async function loadAttendance() {
     const tableBody = document.getElementById("attendanceTableBody");
 
     try {
-        const res = await fetch("https://your-backend/api/at/all", {
+        const res = await fetch("https://lms-backend-zghq.onrender.com/api/at/all", {
             headers: { Authorization: `Bearer ${token}` }
         });
 
