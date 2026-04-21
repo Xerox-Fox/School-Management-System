@@ -129,7 +129,6 @@ console.log("ATTENDANCE RESPONSE:", data);
 
 if (!Array.isArray(data)) {
     console.error("Invalid attendance format:", data);
-    return;
 }
 
 
@@ -338,7 +337,6 @@ async function loadAttendance() {
     const table = document.getElementById("attendanceTableBody");
     table.innerHTML = "";
 
-    // ✅ handle wrong responses safely
     const records = Array.isArray(data) ? data : data.data;
 
     if (!Array.isArray(records)) {
