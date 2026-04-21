@@ -41,6 +41,12 @@
                             <span class="text nav-text">Add Scores</span>
                         </a>
                     </li>
+                    <li class="nav-link active">
+                        <a href="#report">
+                            <i class="ri-draft-line icon"></i>
+                            <span class="text nav-text">Attendance</span>
+                        </a>
+                    </li>
                     <li class="nav-link">
                         <a href="#news">
                             <i class="bx bx-news icon"></i>
@@ -65,6 +71,21 @@
         <div id="news" class="active">
             <div class="feed-container" style="padding: 20px 60px;">
                 <div id="news-posts-container"></div>
+            </div>
+        </div>
+
+        <div class="content-section" id="report">
+            <div id="reportArea">
+                <h3>Attendance</h3>
+                <p>Fill this to let us know that you are at work.</p>
+                <form id="consult">
+                    <select id="attendanceStatus">
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                        <option value="Late">Late</option>
+                    </select>
+                    <button onclick="submitAttendance()">Submit</button>
+                </form>
             </div>
         </div>
 
