@@ -236,3 +236,20 @@ if (gradeForm) {
         }
     });
 }
+
+async function submitAttendance() {
+    const token = localStorage.getItem("token");
+    const status = document.getElementById("attendanceStatus").value;
+
+    const res = await fetch("https://your-backend/api/at/mark", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+    });
+
+    const data = await res.json();
+    alert(data.msg);
+}
