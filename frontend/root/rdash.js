@@ -321,36 +321,73 @@ async function loadUsers() {
 
 async function loadAttendance() {
     const token = localStorage.getItem("token");
-
-    const res = await fetch("https://lms-backend-zghq.onrender.com/api/at/all", {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const data = await res.json();
-
-    console.log("ATTENDANCE RESPONSE:", data);
-
     const table = document.getElementById("attendanceTableBody");
-    table.innerHTML = "";
 
-    const records = Array.isArray(data) ? data : data.data;
+    if (!table) return;
 
-    if (!Array.isArray(records)) {
-        console.error("Invalid attendance format:", data);
-        table.innerHTML = `<tr><td colspan="4">No data / Access denied</td></tr>`;
-        return;
-    }
+    try {
+        const res = await fetch("https://lms-backend-zghq.onrender.com/api/at/all", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
 
-    records.forEach(item => {
-        const row = document.createElement("tr");
+        const data = await res.json();
 
-        row.innerHTML = `
-            <td>${item.teacher_id}</td>
-            <td>${item.teacher_name || "Unknown"}</td>
-            <td>${item.date}</td>
-            <td>${item.status}</td>
+        console.log("ATTENDANCE RESPONSE:", data);
+
+        // ❌ HANDLE ERRORS FIRST
+        if (!res.ok) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="4">Error: ${data.msg || "Failed to load attendance"}</td>
+                </tr>
+            `;
+            return;
+        }
+
+        // ✅ MUST BE ARRAY
+        if (!Array.isArray(data)) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="4">Invalid data format from server</td>
+                </tr>
+            `;
+            return;
+        }
+
+        // ✅ EMPTY STATE
+        if (data.length === 0) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="4">No attendance records found</td>
+                </tr>
+            `;
+            return;
+        }
+
+        // ✅ RENDER TABLE
+        table.innerHTML = "";
+
+        data.forEach(item => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${item.att_id}</td>
+                <td>${item.teacher_name || "Unknown"}</td>
+                <td>${item.date}</td>
+                <td>${item.status}</td>
+            `;
+
+            table.appendChild(row);
+        });
+
+    } catch (err) {
+        console.error("ATTENDANCE FETCH ERROR:", err);
+        table.innerHTML = `
+            <tr>
+                <td colspan="4">Server error or network issue</td>
+            </tr>
         `;
-
-        table.appendChild(row);
-    });
+    }
 }
