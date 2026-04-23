@@ -1,56 +1,27 @@
-const loginForm = document.getElementById('loginForm');
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); 
+  const accounts = [
+    { email: "student1@test.com", password: "123456", role: "student" },
+    { email: "teacher1@test.com", password: "123456", role: "teacher" },
+    { email: "parent1@test.com", password: "123456", role: "parent" },
+    { email: "root@test.com", password: "123456", role: "root" }
+  ];
 
-    const btn = document.querySelector('.btn-primary');
-    btn.innerText = "Logging in...";
-    btn.disabled = true;
+  const user = accounts.find(u => u.email === email && u.password === password);
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('pass').value;
+  if (!user) {
+    alert("Invalid credentials");
+    return;
+  }
 
-    try {
-        const response = await fetch('http://localhost:3000/api/users/login', { // Adjust URL to your route
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
+  localStorage.setItem("isAuthenticated", "true");
+  localStorage.setItem("user_type", user.role);
+  localStorage.setItem("user_email", user.email);
 
-        const data = await response.json();
-
-        if (response.ok) {
-            // 1. Store the token and user info in LocalStorage
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('fullname', data.user.fullname);
-            localStorage.setItem('display_id', data.user.display_id);
-            localStorage.setItem('user_type', data.user.user_type);
-
-            const displayId = data.user.display_id || '';
-            const userType = data.user.user_type || '';
-
-             if (userType === 'root'){
-                window.location.href = '../root/rdash.html';
-             } else if (displayId.startsWith('STU-')) {
-                window.location.href = '../student/sdash.html';
-             } else if (displayId.startsWith('TEA-')) {
-                window.location.href = '../teacher/tdash.html';
-             } else if (displayId.startsWith('PRT-')) {
-                window.location.href = '../parent/pdash.html';
-             } else {
-                window.location.href = '../Home/home.html'
-             }
-        } else {
-            alert(data.msg || 'Login failed - invalid credentials');
-            btn.innerHTML = "Login";
-            btn.disabled = false;
-        }
-    } catch (error) {
-        console.error("Login Error:", error);
-        alert("Server connection failed. Is your Node server running?");
-        btn.innerHTML = "Login";
-        btn.disabled = false;
-    }
-});
+  if (user.role === "student") window.location.href = "../student/sdash.html";
+  if (user.role === "teacher") window.location.href = "../teacher/tdash.html";
+  if (user.role === "parent") window.location.href = "../parent/pdash.html";
+  if (user.role === "root") window.location.href = "../root/rdash.html";
+}

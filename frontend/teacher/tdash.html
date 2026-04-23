@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard</title>
+
     <link rel="stylesheet" href="tdash.css">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+
     <style>
-        /* Essential for your JS navigation to work */
         .main-content > div {
             display: none;
         }
@@ -18,100 +19,195 @@
     </style>
 </head>
 <body>
-    <nav class="sidebar close">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <img src="../images/lccs.png" alt="Logo">
-                </span>
-                <div class="text header-text">
-                    <span class="name" id="user-name">Loading...</span>
-                    <span class="role" id="user-role">Teacher</span>
-                </div>
-            </div>
-            <i class="bx bx-chevron-right toggle"></i>
-        </header>
 
-        <div class="menu-bar">
-            <div class="menu">
-                <ul class="menu-links">
-                    <li class="nav-link active">
-                        <a href="#add-scores">
-                            <i class="ri-draft-line icon"></i>
-                            <span class="text nav-text">Add Scores</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#news">
-                            <i class="bx bx-news icon"></i>
-                            <span class="text nav-text">News Feed</span>
-                        </a>
-                    </li>
-                </ul>
+<nav class="sidebar close">
+    <header>
+        <div class="image-text">
+            <span class="image">
+                <img src="../images/lccs.png">
+            </span>
+            <div class="text header-text">
+                <span class="name" id="user-name">Teacher 1</span>
+                <span class="role">Teacher</span>
             </div>
-            <div class="bottom-content">
-                <li class="nav-link">
-                    <a href="../Login/login.html">
-                        <i class="bx bx-log-out icon"></i>
-                        <span class="text nav-text">Logout</span>
+        </div>
+        <i class="bx bx-chevron-right toggle"></i>
+    </header>
+
+    <div class="menu-bar">
+        <div class="menu">
+            <ul class="menu-links">
+
+                <li class="nav-link active">
+                    <a href="#attendance">
+                        <i class="bx bx-calendar-check icon"></i>
+                        <span class="text nav-text">Attendance</span>
                     </a>
                 </li>
-            </div>
+
+                <li class="nav-link">
+                    <a href="#add-scores">
+                        <i class="ri-draft-line icon"></i>
+                        <span class="text nav-text">Add Scores</span>
+                    </a>
+                </li>
+
+                <li class="nav-link">
+                    <a href="#news">
+                        <i class="bx bx-news icon"></i>
+                        <span class="text nav-text">News Feed</span>
+                    </a>
+                </li>
+
+            </ul>
         </div>
-    </nav>
 
-    <main class="main-content">
-
-        <div id="news" class="active">
-            <div class="feed-container" style="padding: 20px 60px;">
-                <div id="news-posts-container"></div>
-            </div>
+        <div class="bottom-content">
+            <li class="nav-link">
+                <a href="../Login/login.html">
+                    <i class="bx bx-log-out icon"></i>
+                    <span class="text nav-text">Logout</span>
+                </a>
+            </li>
         </div>
+    </div>
+</nav>
 
-        <div id="add-scores">
-            <div style="padding: 20px 60px;">
-                <div id="scoreArea" style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
-                    <h3 style="color: #203791; margin-bottom: 5px;"><i class="bx bx-edit"></i> Input Student Grades</h3>
-                    <p style="margin-bottom: 25px; color: #707070; font-size: 0.9rem;">
-                        Grading for: <span id="teacher-subject-display" style="color: #203791; font-weight: bold;">Loading...</span>
-                    </p>
-                    
-                    <form id="gradeForm">
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 5px; color: #707070;">Select Student</label>
-                            <select id="studentSelect" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none;">
-                                <option value="" disabled selected>Loading students...</option>
-                            </select>
-                        </div>
+<main class="main-content">
 
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 5px; color: #707070;">Semester</label>
-                            <select id="semesterSelect" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none;">
-                                <option value="1">Semester 1</option>
-                                <option value="2">Semester 2</option>
-                            </select>
-                        </div>
+    <!-- ================= ATTENDANCE ================= -->
+    <div id="attendance" class="active">
+        <div class="attendance-container">
 
-                        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                            <div style="flex: 1;">
-                                <label style="display: block; margin-bottom: 5px; color: #707070;">Assessment (40)</label>
-                                <input type="number" id="assessMark" min="0" max="40" step="0.1" placeholder="0.0" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none;">
-                            </div>
-                            <div style="flex: 1;">
-                                <label style="display: block; margin-bottom: 5px; color: #707070;">Exam (60)</label>
-                                <input type="number" id="examMark" min="0" max="60" step="0.1" placeholder="0.0" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none;">
-                            </div>
-                        </div>
+            <h2 class="text-title">
+                <i class="bx bx-calendar-check"></i> Mark Attendance
+            </h2>
 
-                        <button type="submit" class="btn-primary" style="width: 100%; padding: 15px; background: #203791; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.3s;">
-                            Save Grade
-                        </button>
-                    </form>
+            <div class="attendance-card">
+                <p class="attendance-date" id="todayDate"></p>
+
+                <div class="attendance-buttons">
+                    <button class="btn-present" onclick="markAttendance('Present')">
+                        <i class="bx bx-check-circle"></i> Present
+                    </button>
+
+                    <button class="btn-absent" onclick="markAttendance('Absent')">
+                        <i class="bx bx-x-circle"></i> Absent
+                    </button>
+                </div>
+
+                <p id="attendanceStatusMsg" class="status-msg"></p>
+            </div>
+
+            <!-- HISTORY TABLE -->
+            <div class="attendance-history">
+                <h3>Attendance History</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTable">
+                        <!-- Dummy data -->
+                        <tr>
+                            <td>2026-04-20</td>
+                            <td class="present">Present</td>
+                        </tr>
+                        <tr>
+                            <td>2026-04-19</td>
+                            <td class="absent">Absent</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= SCORES ================= -->
+    <div id="add-scores">
+        <div class="form-card">
+            <h3><i class="bx bx-edit"></i> Input Student Grades</h3>
+
+            <form>
+                <input type="text" placeholder="Student Name">
+                <input type="number" placeholder="Assessment">
+                <input type="number" placeholder="Exam">
+
+                <button type="submit">Save Grade</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= NEWS ================= -->
+    <div id="news">
+        <div class="feed-container">
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="user-avatar">A</div>
+                    <div class="post-info">
+                        <span class="author-name">Admin</span>
+                        <span class="post-date">Today</span>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <h3>Welcome Teachers</h3>
+                    <p>System is running in demo mode.</p>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <script src="tdash.js"></script>
+</main>
+
+<script>
+    const toggle = document.querySelector(".toggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("close");
+    });
+
+    // Navigation
+    document.querySelectorAll(".nav-link a").forEach(link => {
+        link.addEventListener("click", e => {
+            e.preventDefault();
+
+            document.querySelectorAll(".nav-link").forEach(li => li.classList.remove("active"));
+            link.parentElement.classList.add("active");
+
+            document.querySelectorAll(".main-content > div").forEach(d => d.classList.remove("active"));
+            document.querySelector(link.getAttribute("href")).classList.add("active");
+        });
+    });
+
+    // Set today date
+    document.getElementById("todayDate").innerText =
+        new Date().toLocaleDateString();
+
+    // Fake attendance (demo)
+    function markAttendance(status) {
+        const msg = document.getElementById("attendanceStatusMsg");
+
+        msg.innerText = `Marked as ${status}`;
+        msg.style.color = status === "Present" ? "green" : "red";
+
+        // Add to table instantly
+        const table = document.getElementById("attendanceTable");
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${new Date().toISOString().split("T")[0]}</td>
+            <td class="${status.toLowerCase()}">${status}</td>
+        `;
+
+        table.prepend(row);
+    }
+</script>
+
 </body>
 </html>
