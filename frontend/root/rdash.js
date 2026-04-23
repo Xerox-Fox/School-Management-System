@@ -265,3 +265,17 @@ navLinks.forEach(link => {
         }
     });
 });
+
+async function getSystemSummary() {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:3000/api/users/stats", {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    const stats = await res.json();
+    
+    if (res.ok) {
+        document.getElementById("totalStudents").innerText = stats.students;
+        document.getElementById("totalTeachers").innerText = stats.teachers;
+        document.getElementById("pendingReports").innerText = stats.reports;
+    }
+}
