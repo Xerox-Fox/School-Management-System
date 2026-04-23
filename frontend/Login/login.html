@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login">
+        <div class="login-card">
+            <center>
+            <img src="../images/lccs.png" alt="LCCS logo" class="logo">
+            <h2>Welcome Back</h2>
+            <p>Please enter your details to login to your existing account</p>
+            <form id="loginForm">
+                <input type="email" name="Email" id="email" placeholder="Email" required> <br>
+                <input type="password" name="Password" id="pass" placeholder="Password" required> 
+                <div class="terms-container">
+                    <input type="checkbox" name="terms" id="term" required>
+                    <label for="term">I agree to the <a href="terms.html">Terms and Conditions</a></label>
+                </div> <br>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            
+            </center>
+        </div>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>
