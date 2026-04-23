@@ -132,4 +132,20 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-module.exports = { register, login, logout, checkUser, getAllUsers };
+const getSystemStats = async (req, res) => {
+    try {
+        const [students] = await db.execute("SELECT COUNT(*) as count FROM users WHERE user_type = 'student'");
+        const [teachers] = await db.execute("SELECT COUNT(*) as count FROM users WHERE user_type = 'teacher'");
+        const [total] = await db.execute("SELECT COUNT(*) as count FROM users");
+        
+        res.status(200).json({
+            students: students[0].count,
+            teachers: teachers[0].count,
+            total: total[0].count
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching system stats", error: error.message });
+    }
+};
+
+module.exports = { register, login, logout, checkUser, getAllUsers, getSystemStats };

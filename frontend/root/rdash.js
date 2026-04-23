@@ -279,3 +279,37 @@ async function getSystemSummary() {
         document.getElementById("pendingReports").innerText = stats.reports;
     }
 }
+
+
+const API_URL = "http://localhost:3000"; 
+
+async function refreshRootDashboard() {
+    const token = localStorage.getItem("token");
+    
+    try {
+        const response = await fetch(`${API_URL}/api/users/stats`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const stats = await response.json();
+
+        if (response.ok) {
+            // Updating the stat cards in your HTML
+            document.getElementById("stat-students").innerText = stats.students;
+            document.getElementById("stat-teachers").innerText = stats.teachers;
+            document.getElementById("stat-total").innerText = stats.total;
+        }
+    } catch (error) {
+        console.error("Dashboard sync failed:", error);
+    }
+}
+
+// Auto-refresh every 5 minutes during the presentation
+if (window.location.pathname.includes('rdsh')) {
+    refreshRootDashboard();
+    setInterval(refreshRootDashboard, 300000);
+}
