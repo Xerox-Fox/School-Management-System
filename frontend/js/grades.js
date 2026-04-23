@@ -1,16 +1,11 @@
-import { db } from "../firebase/db.js";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+export const gradesDB = {
+  student1: [
+    { subject: "Math", assessment: 35, exam: 55 },
+    { subject: "Physics", assessment: 32, exam: 50 },
+    { subject: "English", assessment: 38, exam: 52 }
+  ]
+};
 
-/* ADD GRADE */
-export async function addGrade(data) {
-  await addDoc(collection(db, "grades"), {
-    ...data,
-    total: Number(data.assessment) + Number(data.exam)
-  });
-}
-
-/* GET GRADES */
-export async function getGrades() {
-  const snap = await getDocs(collection(db, "grades"));
-  return snap.docs.map(d => d.data());
+export function getGrades(studentKey) {
+  return gradesDB[studentKey] || [];
 }

@@ -1,189 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard</title>
 
-    <link rel="stylesheet" href="tdash.css">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+<link rel="stylesheet" href="tdash.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
 
-    <style>
-        .main-content > div {
-            display: none;
-        }
-        .main-content > div.active {
-            display: block;
-        }
-    </style>
+<style>
+.main-content > div { display: none; }
+.main-content > div.active { display: block; }
+</style>
 </head>
+
 <body>
 
+<!-- SIDEBAR -->
 <nav class="sidebar close">
-    <header>
-        <div class="image-text">
-            <span class="image">
-                <img src="../images/lccs.png">
-            </span>
-            <div class="text header-text">
-                <span class="name" id="user-name">Teacher 1</span>
-                <span class="role">Teacher</span>
-            </div>
-        </div>
-        <i class="bx bx-chevron-right toggle"></i>
-    </header>
-
-    <div class="menu-bar">
-        <div class="menu">
-            <ul class="menu-links">
-
-                <li class="nav-link active">
-                    <a href="#attendance">
-                        <i class="bx bx-calendar-check icon"></i>
-                        <span class="text nav-text">Attendance</span>
-                    </a>
-                </li>
-
-                <li class="nav-link">
-                    <a href="#add-scores">
-                        <i class="ri-draft-line icon"></i>
-                        <span class="text nav-text">Add Scores</span>
-                    </a>
-                </li>
-
-                <li class="nav-link">
-                    <a href="#news">
-                        <i class="bx bx-news icon"></i>
-                        <span class="text nav-text">News Feed</span>
-                    </a>
-                </li>
-
-            </ul>
-        </div>
-
-        <div class="bottom-content">
-            <li class="nav-link">
-                <a href="../Login/login.html">
-                    <i class="bx bx-log-out icon"></i>
-                    <span class="text nav-text">Logout</span>
-                </a>
-            </li>
+<header>
+    <div class="image-text">
+        <span class="image">
+            <img src="../images/lccs.png">
+        </span>
+        <div class="text header-text">
+            <span class="name">Teacher 1</span>
+            <span class="role">Teacher</span>
         </div>
     </div>
+</header>
+
+<div class="menu-bar">
+    <ul class="menu-links">
+
+        <li class="nav-link active">
+            <a href="#attendance">
+                <i class="bx bx-calendar-check icon"></i>
+                <span class="text">Attendance</span>
+            </a>
+        </li>
+
+        <li class="nav-link">
+            <a href="#scores">
+                <i class="ri-draft-line icon"></i>
+                <span class="text">Scores</span>
+            </a>
+        </li>
+
+    </ul>
+</div>
 </nav>
 
+<!-- MAIN -->
 <main class="main-content">
 
-    <!-- ================= ATTENDANCE ================= -->
-    <div id="attendance" class="active">
-        <div class="attendance-container">
+<!-- ATTENDANCE -->
+<div id="attendance" class="active">
 
-            <h2 class="text-title">
-                <i class="bx bx-calendar-check"></i> Mark Attendance
-            </h2>
+    <h2 class="text-title">Mark Attendance</h2>
 
-            <div class="attendance-card">
-                <p class="attendance-date" id="todayDate"></p>
+    <div class="attendance-card">
 
-                <div class="attendance-buttons">
-                    <button class="btn-present" onclick="markAttendance('Present')">
-                        <i class="bx bx-check-circle"></i> Present
-                    </button>
+        <p id="today"></p>
 
-                    <button class="btn-absent" onclick="markAttendance('Absent')">
-                        <i class="bx bx-x-circle"></i> Absent
-                    </button>
-                </div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="markAttendance('Present')" class="btn-present">
+                Present
+            </button>
 
-                <p id="attendanceStatusMsg" class="status-msg"></p>
-            </div>
-
-            <!-- HISTORY TABLE -->
-            <div class="attendance-history">
-                <h3>Attendance History</h3>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTable">
-                        <!-- Dummy data -->
-                        <tr>
-                            <td>2026-04-20</td>
-                            <td class="present">Present</td>
-                        </tr>
-                        <tr>
-                            <td>2026-04-19</td>
-                            <td class="absent">Absent</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
+            <button onclick="markAttendance('Absent')" class="btn-absent">
+                Absent
+            </button>
         </div>
+
+        <p id="msg"></p>
+
     </div>
 
-    <!-- ================= SCORES ================= -->
-    <div id="add-scores">
-        <div class="form-card">
-            <h3><i class="bx bx-edit"></i> Input Student Grades</h3>
+    <h3>History</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
 
-            <form>
-                <input type="text" placeholder="Student Name">
-                <input type="number" placeholder="Assessment">
-                <input type="number" placeholder="Exam">
+        <tbody id="table"></tbody>
+    </table>
 
-                <button type="submit">Save Grade</button>
-            </form>
-        </div>
-    </div>
+</div>
 
-    <!-- ================= NEWS ================= -->
-    <div id="news">
-        <div class="feed-container">
-            <div class="post-card">
-                <div class="post-header">
-                    <div class="user-avatar">A</div>
-                    <div class="post-info">
-                        <span class="author-name">Admin</span>
-                        <span class="post-date">Today</span>
-                    </div>
-                </div>
+<!-- SCORES -->
+<div id="scores">
+    <h2>Add Scores</h2>
 
-                <div class="post-content">
-                    <h3>Welcome Teachers</h3>
-                    <p>System is running in demo mode.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <input placeholder="Student Name">
+    <input placeholder="Assessment">
+    <input placeholder="Exam">
+
+    <button>Save</button>
+</div>
 
 </main>
 
+<!-- SCRIPT -->
+<script src="../js/attendance.js"></script>
 
-<select id="status">
-  <option>Present</option>
-  <option>Absent</option>
-</select>
+<script>
+import { getPosts } from "../js/posts.js";
+import { getAttendance, markAttendance } from "../js/attendance.js";
+import { getUser } from "../js/auth.js";
 
-<button onclick="mark()">Mark Attendance</button>
+const user = getUser();
+document.getElementById("user-name").innerText = user.name;
 
-<script type="module">
-import { markAttendance } from "../js/attendance.js";
+// attendance
+const table = document.getElementById("attendanceTable");
 
-window.mark = async () => {
-  await markAttendance({
-    teacher_id: "T1",
-    teacher_name: "Teacher 1",
-    status: document.getElementById("status").value
-  });
+function renderAttendance() {
+  table.innerHTML = getAttendance().map(a => `
+    <tr>
+      <td>${a.date}</td>
+      <td>${a.status}</td>
+    </tr>
+  `).join("");
+}
 
-  alert("Attendance saved");
+renderAttendance();
+
+window.markAttendance = (status) => {
+  markAttendance(status);
+  renderAttendance();
 };
+
+// news
+document.getElementById("news-posts-container").innerHTML =
+getPosts().map(p => `
+<div class="post-card">
+  <h3>${p.title}</h3>
+  <p>${p.content}</p>
+</div>
+`).join("");
 </script>
 
 </body>

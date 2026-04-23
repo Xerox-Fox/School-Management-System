@@ -10,38 +10,65 @@
     <div class="login">
         <div class="login-card">
             <center>
-            <img src="../images/lccs.png" alt="LCCS logo" class="logo">
+            <img src="../images/lccs.png" class="logo">
             <h2>Welcome Back</h2>
-            <p>Please enter your details to login to your existing account</p>
+            <p>Please enter your details to login</p>
+
             <form id="loginForm">
-                <input type="email" name="Email" id="email" placeholder="Email" required> <br>
-                <input type="password" name="Password" id="pass" placeholder="Password" required> 
+                <input type="email" id="email" placeholder="Email" required>
+                <br>
+
+                <input type="password" id="pass" placeholder="Password" required>
+                <br>
+
                 <div class="terms-container">
-                    <input type="checkbox" name="terms" id="term" required>
-                    <label for="term">I agree to the <a href="terms.html">Terms and Conditions</a></label>
-                </div> <br>
+                    <input type="checkbox" required>
+                    <label>I agree to Terms</label>
+                </div>
+
+                <br>
+
                 <button type="submit" class="btn-primary">Login</button>
             </form>
-            
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email" required>
+                <br>
+                <input type="password" id="password" placeholder="Password" required>
+                <br>
+                <div class="terms-container">
+                    <input type="checkbox" required>
+                    <label>I agree to Terms</label>
+                </div>
+                <br>
+                <button type="submit">Login</button>
+            </form>
+
             </center>
         </div>
     </div>
-    <script type="module">
+
+<script type="module">
 import { login } from "./js/auth.js";
 
-window.loginUser = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+document.getElementById("loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
 
-  const user = await login(email, password);
+  try {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-  const role = user.profile.user_type;
+    const user = login(email, password);
 
-  if (role === "teacher") location.href = "./dashboards/tdash.html";
-  if (role === "root") location.href = "./dashboards/rdash.html";
-  if (role === "student") location.href = "./dashboards/sdash.html";
-  if (role === "parent") location.href = "./dashboards/pdash.html";
-};
+    if (user.role === "student") location.href = "./dashboards/sdash.html";
+    if (user.role === "teacher") location.href = "./dashboards/tdash.html";
+    if (user.role === "parent") location.href = "./dashboards/pdash.html";
+    if (user.role === "root") location.href = "./dashboards/rdash.html";
+
+  } catch (err) {
+    alert(err.message);
+  }
+});
 </script>
+
 </body>
 </html>

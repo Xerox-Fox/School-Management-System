@@ -1,7 +1,26 @@
-import { db } from "../firebase/db.js";
-import { collection, getDocs } from "firebase/firestore";
-
-export async function getUsers() {
-  const snap = await getDocs(collection(db, "users"));
-  return snap.docs.map(d => d.data());
-}
+export const users = [
+  {
+    email: "student1@lccs.com",
+    password: "1234",
+    role: "student",
+    name: "Student One"
+  },
+  {
+    email: "teacher1@lccs.com",
+    password: "1234",
+    role: "teacher",
+    name: "Teacher One"
+  },
+  {
+    email: "parent1@lccs.com",
+    password: "1234",
+    role: "parent",
+    name: "Parent One"
+  },
+  {
+    email: "root@lccs.com",
+    password: "1234",
+    role: "root",
+    name: "Admin Root"
+  }
+];

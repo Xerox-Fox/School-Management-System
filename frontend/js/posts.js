@@ -1,14 +1,18 @@
-import { db } from "../firebase/db.js";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+export const posts = [
+  {
+    title: "School Reopens",
+    content: "Classes resume Monday.",
+    author: "Admin",
+    date: "2026-04-23"
+  },
+  {
+    title: "Exam Week",
+    content: "Final exams next week.",
+    author: "Principal",
+    date: "2026-04-22"
+  }
+];
 
-export async function createPost(data) {
-  await addDoc(collection(db, "posts"), {
-    ...data,
-    created_at: new Date()
-  });
-}
-
-export async function getPosts() {
-  const snap = await getDocs(collection(db, "posts"));
-  return snap.docs.map(d => d.data());
+export function getPosts() {
+  return posts;
 }

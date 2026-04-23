@@ -1,220 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="rdash.css">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Root Dashboard</title>
+
+<link rel="stylesheet" href="rdash.css">
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.content-page { display:none; }
+.content-page.active { display:block; }
+.nav-link a.active { background:#203791; color:white; }
+</style>
 </head>
+
 <body>
-    <nav class="sidebar close">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <img src="../images/lccs.png" alt="Logo">
-                </span>
 
-                <div class="text header-text">
-                    <span class="name">LCCS</span>
-                    <span class="role">Root</span>
-                </div>
-            </div>
-
-            <i class="bx bx-chevron-right toggle"></i>
-        </header>
-
-        <div class="menu-bar">
-            <div class="menu">
-                <ul class="menu-links">
-                    <li class="nav-link">
-                        <a href="#home">
-                            <i class="bx bx-home-alt icon"></i>
-                            <span class="text nav-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#grades">
-                            <i class="bx bx-user-plus icon"></i>
-                            <span class="text nav-text">Add Users</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#post">
-                            <i class="bx bx-news icon"></i>
-                            <span class="text nav-text">Post</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#report">
-                            <i class="ri-file-chart-line icon"></i>
-                            <span class="text nav-text">Report</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#analytics">
-                            <i class="bx bx-pie-chart-alt icon"></i>
-                            <span class="text nav-text">Analytics</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="bottom-content">
-                <li class="nav-link">
-                    <a href="#" id="logoutBtn">
-                        <i class="bx bx-log-out icon"></i>
-                        <span class="text nav-text">Logout</span>
-                    </a>
-                </li>
-            </div>
+<!-- SIDEBAR -->
+<nav class="sidebar close">
+<header>
+    <div class="image-text">
+        <img src="../images/lccs.png" width="40">
+        <div>
+            <div class="name">LCCS</div>
+            <div class="role">Root</div>
         </div>
-    </nav>
+    </div>
+</header>
 
-    <main class="main-content">
-        <div class="content-page active" id="home">
-            <div class="text">Dashboard</div>
-            <div style="background: #fff; padding: 20px; border-radius: 16px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
-                <h3 style="color: #707070; margin-bottom: 15px;">Portal Overview</h3>
-                <div style="height: 250px;"><canvas id="dashChart"></canvas></div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
-                <div style="background: #203791; color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(32, 55, 145, 0.2);">
-                    <p style="opacity: 0.8; font-size: 0.9rem;">Total Students</p>
-                    <h2 id="dashStudentCount">0</h2>
-                </div>
-                <div style="background: #fff; padding: 20px; border-radius: 12px; border-left: 5px solid #4C6EF5; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                    <p style="color: #707070; font-size: 0.9rem;">Teachers Active</p>
-                    <h2 id="dashTeacherCount" style="color: #203791;">0</h2>
-                </div>
-                <div style="background: #fff; padding: 20px; border-radius: 12px; border-left: 5px solid #BAC8FF; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                    <p style="color: #707070; font-size: 0.9rem;">New Reports</p>
-                    <h2 id="dashReportCount" style="color: #203791;">0</h2>
-                </div>
-            </div>
-            </div>
-        </div>
+<ul class="menu-links">
 
-        <div class="content-page" id="grades">
-            <div id="addArea">
-                <h3>Add Users</h3>
-                <form id="form">
-                    <input type="text" name="name" id="name" placeholder="Full Name" required>
-                    <input type="email" name="email" id="email" placeholder="Email Address" required>
-                    <input type="tel" name="phone" id="phone" placeholder="Phone Number" required>
-                    <input type="text" name="address" id="addr" placeholder="Address" required>
-                    
-                    <select name="user_type" id="user_type" required>
-                        <option value="" disabled selected>Select Role</option>
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="parent">Parent</option>
-                    </select>
+<li class="nav-link"><a href="#home">Dashboard</a></li>
+<li class="nav-link"><a href="#users">Users</a></li>
+<li class="nav-link"><a href="#post">Post</a></li>
+<li class="nav-link"><a href="#report">Reports</a></li>
+<li class="nav-link"><a href="#analytics">Analytics</a></li>
 
-                    <div id="subject_container" style="display: none; margin-top: 10px;">
-                        <select name="subject" id="subject">
-                            <option value="" disabled selected>Select Subject</option>
-                            <option value="math">Mathematics</option>
-                            <option value="physics">Physics</option>
-                            <option value="chemistry">Chemistry</option>
-                            <option value="biology">Biology</option>
-                            <option value="english">English</option>
-                            <option value="history">History</option>
-                            <option value="geography">Geography</option>
-                            <option value="economics">Economics</option>
-                            <option value="it">IT</option>
-                        </select>
-                    </div>
+</ul>
+</nav>
 
-                    <button type="submit" class="btn-primary">Add user</button>
-                </form>
-            </div>
-        </div>
+<!-- MAIN -->
+<main class="main-content">
 
-        <div class="content-page" id="post">
-            <div id="rootPostArea">
-                <h3>Post School News</h3>
-                <form id="blogForm">
-                    <input type="text" id="blogTitle" placeholder="Title" required>
-                    <textarea placeholder="Write news here...." id="blogContent" required></textarea>
-                    
-                    <div class="file-input-wrapper">
-                        <label for="blogImage">Upload Cover Image (Optional)</label>
-                        <input type="file" id="blogImage" accept="image/*" multiple>
-                    </div>
+<!-- HOME -->
+<div id="home" class="content-page active">
 
-                    <button type="button" id="clearImages" class="btn-secondary" style="display: none; margin-top: 10px;">
-                        <i class="bx bx-trash"></i> Clear All Images
-                    </button>
+<h2>Dashboard Overview</h2>
 
-                    <div id="imagePreviewContainer" class="preview-box"></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px">
 
-                    <button type="submit" id="postBtn">Post News</button>
-                </form>
-            </div>
+<div style="background:#203791;color:white;padding:20px;border-radius:10px">
+<h3>Total Students</h3>
+<p id="students">120</p>
+</div>
 
-            <div id="nonRootMessage" style="display: none; text-align: center; padding: 80px 20px;">
-                <h3>School News Posting</h3>
-                <p style="font-size: 1.1rem; color: #555;">
-                    This section is only available to administrators.<br>
-                    You can view published news in the Dashboard or News feed.
-                </p>
-            </div>
-        </div>
+<div style="background:white;padding:20px;border-radius:10px">
+<h3>Teachers</h3>
+<p id="teachers">25</p>
+</div>
 
-        <div class="content-section" id="report">
-            <div id="reportArea">
-                <h3>Parental Consultation</h3>
-                <form id="consult">
-                    <input type="text" name="name" id="name" placeholder="Full Name Of Student" required>
-                    <input type="text" name="grade" id="grade" placeholder="Grade & Section" required>
-                    <select name="user_type" id="user_type" required>
-                        <option value="" disabled selected>Reason</option>
-                        <option value="student">Discipline</option>
-                        <option value="teacher">Grade</option>
-                        <option value="parent">Absent</option>
-                    </select>
-                    <textarea placeholder="Full reason...." id="reasonfield" required></textarea>
-                    <select name="importancy" id="imp" required>
-                        <option value="" disabled selected>Importancy</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                    <button type="submit" class="btn-primary">Submit</button>
-                </form>
-            </div>
-        </div>
+<div style="background:white;padding:20px;border-radius:10px">
+<h3>Reports</h3>
+<p id="reports">8</p>
+</div>
 
-        <div class="content-section" id="analytics">
-            <div class="text">Analytics</div>
-            <div style="display: flex; gap: 20px; margin-top: 20px;">
-                <div style="flex: 2; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
-                    <h3 style="color: #707070; margin-bottom: 15px;">User Distribution</h3>
-                    <div style="height: 300px;"><canvas id="analChart"></canvas></div>
-                </div>
-                <div style="flex: 1; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center;">
-                    <h3 style="color: #707070;">Total Registered</h3>
-                    <h1 id="totalUserCount" style="font-size: 5rem; color: #203791; margin: 20px 0;">0</h1>
-                    <p style="color: #707070;">Users currently in database</p>
-                </div>
-            </div>
-        </div>
-    </main>
-    <script type="module">
-import { getUsers } from "../js/users.js";
+</div>
 
-const data = await getUsers();
+</div>
 
-document.getElementById("users").innerHTML =
-  data.map(u => `<p>${u.name} - ${u.user_type}</p>`).join("");
+<!-- USERS -->
+<div id="users" class="content-page">
+
+<h2>Users (Demo)</h2>
+
+<div id="userTable"></div>
+
+</div>
+
+<!-- POST -->
+<div id="post" class="content-page">
+<h2>Post News</h2>
+<input placeholder="Title">
+<textarea placeholder="Content"></textarea>
+<button>Post</button>
+</div>
+
+<!-- REPORT -->
+<div id="report" class="content-page">
+<h2>Reports</h2>
+<p>Demo reports section</p>
+</div>
+
+<!-- ANALYTICS -->
+<div id="analytics" class="content-page">
+
+<h2>Analytics</h2>
+<canvas id="chart"></canvas>
+
+</div>
+
+</main>
+
+<!-- SCRIPT -->
+<script>
+import { users } from "../js/auth.js";
+import { getPosts } from "../js/posts.js";
+
+// stats
+document.getElementById("dashStudentCount").innerText =
+users.filter(u => u.role === "student").length;
+
+document.getElementById("dashTeacherCount").innerText =
+users.filter(u => u.role === "teacher").length;
+
+// users table (ADD TABLE ID in HTML!)
+document.getElementById("usersTable").innerHTML =
+users.map(u => `
+<tr>
+  <td>${u.name}</td>
+  <td>${u.email}</td>
+  <td>${u.role}</td>
+</tr>
+`).join("");
+
+// news
+document.getElementById("newsBox").innerHTML =
+getPosts().map(p => `
+<div class="post-card">
+  <h3>${p.title}</h3>
+  <p>${p.content}</p>
+</div>
+`).join("");
 </script>
 
-    <script>
-        const ut = localStorage.getItem('user_type');
-        if (ut === 'root') {
-            document.body.classList.add('user-is-root');
-        }
-    </script>
 </body>
 </html>

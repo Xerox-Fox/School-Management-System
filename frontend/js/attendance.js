@@ -1,16 +1,17 @@
-import { db } from "../firebase/db.js";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+export let attendance = [
+  { date: "2026-04-20", status: "Present" },
+  { date: "2026-04-21", status: "Absent" }
+];
 
-/* MARK ATTENDANCE */
-export async function markAttendance(data) {
-  await addDoc(collection(db, "attendance"), {
-    ...data,
-    date: new Date().toISOString().split("T")[0]
+export function markAttendance(status) {
+  attendance.push({
+    date: new Date().toISOString().split("T")[0],
+    status
   });
+
+  localStorage.setItem("attendance", JSON.stringify(attendance));
 }
 
-/* GET ATTENDANCE */
-export async function getAttendance() {
-  const snap = await getDocs(collection(db, "attendance"));
-  return snap.docs.map(d => d.data());
+export function getAttendance() {
+  return attendance;
 }
