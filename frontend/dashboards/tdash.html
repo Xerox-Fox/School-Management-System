@@ -164,49 +164,26 @@
 
 </main>
 
-<script>
-    const toggle = document.querySelector(".toggle");
-    const sidebar = document.querySelector(".sidebar");
 
-    toggle.addEventListener("click", () => {
-        sidebar.classList.toggle("close");
-    });
+<select id="status">
+  <option>Present</option>
+  <option>Absent</option>
+</select>
 
-    // Navigation
-    document.querySelectorAll(".nav-link a").forEach(link => {
-        link.addEventListener("click", e => {
-            e.preventDefault();
+<button onclick="mark()">Mark Attendance</button>
 
-            document.querySelectorAll(".nav-link").forEach(li => li.classList.remove("active"));
-            link.parentElement.classList.add("active");
+<script type="module">
+import { markAttendance } from "../js/attendance.js";
 
-            document.querySelectorAll(".main-content > div").forEach(d => d.classList.remove("active"));
-            document.querySelector(link.getAttribute("href")).classList.add("active");
-        });
-    });
+window.mark = async () => {
+  await markAttendance({
+    teacher_id: "T1",
+    teacher_name: "Teacher 1",
+    status: document.getElementById("status").value
+  });
 
-    // Set today date
-    document.getElementById("todayDate").innerText =
-        new Date().toLocaleDateString();
-
-    // Fake attendance (demo)
-    function markAttendance(status) {
-        const msg = document.getElementById("attendanceStatusMsg");
-
-        msg.innerText = `Marked as ${status}`;
-        msg.style.color = status === "Present" ? "green" : "red";
-
-        // Add to table instantly
-        const table = document.getElementById("attendanceTable");
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${new Date().toISOString().split("T")[0]}</td>
-            <td class="${status.toLowerCase()}">${status}</td>
-        `;
-
-        table.prepend(row);
-    }
+  alert("Attendance saved");
+};
 </script>
 
 </body>

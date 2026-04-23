@@ -26,6 +26,22 @@
             </center>
         </div>
     </div>
-    <script src="login.js"></script>
+    <script type="module">
+import { login } from "./js/auth.js";
+
+window.loginUser = async () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const user = await login(email, password);
+
+  const role = user.profile.user_type;
+
+  if (role === "teacher") location.href = "./dashboards/tdash.html";
+  if (role === "root") location.href = "./dashboards/rdash.html";
+  if (role === "student") location.href = "./dashboards/sdash.html";
+  if (role === "parent") location.href = "./dashboards/pdash.html";
+};
+</script>
 </body>
 </html>

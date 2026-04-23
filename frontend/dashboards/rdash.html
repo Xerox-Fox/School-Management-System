@@ -201,7 +201,14 @@
             </div>
         </div>
     </main>
-    <script src="rdash.js"></script>
+    <script type="module">
+import { getUsers } from "../js/users.js";
+
+const data = await getUsers();
+
+document.getElementById("users").innerHTML =
+  data.map(u => `<p>${u.name} - ${u.user_type}</p>`).join("");
+</script>
 
     <script>
         const ut = localStorage.getItem('user_type');
